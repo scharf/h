@@ -1,5 +1,6 @@
 from annotator import auth, authz, store, es
-from annotator.annotation import Annotation
+#from annotator.annotation import Annotation
+import annotation
 
 from flask import Flask, g
 
@@ -47,6 +48,10 @@ def includeme(config):
     if 'es.index' in settings:
         app.config['ELASTICSEARCH_INDEX'] = settings['es.index']
     es.init_app(app)
+    
+    #TODO: set it right
+    Annotation = annotation.Annotation()
+    
     with app.test_request_context():
         try:
             Annotation.create_all()
@@ -60,6 +65,8 @@ def includeme(config):
     def before_request():
         g.auth = authenticator
         g.authorize = authz.authorize
+        #g.annotation_class = Annotation
+        g.annotation_class = annotation.Annotation
 
     app.before_request(before_request)
 
