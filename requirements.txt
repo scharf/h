@@ -31,6 +31,7 @@ nose==1.1.2
 oauth2==1.5.211
 pbkdf2==1.3
 peppercorn==0.4
+psycopg2==2.4.6
 py==1.4.9
 pyes==0.19.1
 pyramid==1.3.4
