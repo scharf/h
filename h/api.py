@@ -1,6 +1,6 @@
 from annotator import auth, authz, store, es
 #from annotator.annotation import Annotation
-import annotation
+from annotation import Annotation, AlchemyBackend
 
 from flask import Flask, g
 
@@ -9,7 +9,6 @@ from pyramid.view import view_config
 from pyramid.wsgi import wsgiapp2
 
 from h import messages, models
-
 
 @view_config(context='h.resources.APIFactory', request_method='POST',
              name='access_token', permission='access_token', renderer='string')
@@ -43,14 +42,14 @@ def includeme(config):
 
     # Set up the models
     settings = config.get_settings()
+    if 'backend.url' in settings:
+        AlchemyBackend.configure(settings['backend.url'])
+    #TODO: Maybe es related settings are not required
     if 'es.host' in settings:
         app.config['ELASTICSEARCH_HOST'] = settings['es.host']
     if 'es.index' in settings:
         app.config['ELASTICSEARCH_INDEX'] = settings['es.index']
     es.init_app(app)
-    
-    #TODO: set it right
-    Annotation = annotation.Annotation()
     
     with app.test_request_context():
         try:
@@ -65,8 +64,7 @@ def includeme(config):
     def before_request():
         g.auth = authenticator
         g.authorize = authz.authorize
-        #g.annotation_class = Annotation
-        g.annotation_class = annotation.Annotation
+        g.annotation_class = Annotation
 
     app.before_request(before_request)
 

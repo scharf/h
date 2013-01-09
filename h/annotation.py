@@ -1,8 +1,9 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import create_session, sessionmaker
-from sqlalchemy import Column, Integer, String, DateTime, Text, MetaData, desc, create_engine
-from sqlalchemy.dialects.postgresql import ARRAY, HSTORE
-from sqlalchemy.ext.mutable import MutableDict 
+from sqlalchemy import Column, Integer, String, DateTime, Text, desc, create_engine
+from sqlalchemy.schema import Index
+#from sqlalchemy.dialects.postgresql import ARRAY, HSTORE
+#from sqlalchemy.ext.mutable import MutableDict 
 
 from annotator.jsonencoderregistry import JSONEncoderRegistry
 
@@ -17,22 +18,26 @@ import logging
 log = logging.getLogger(__name__)
 RESULTS_MAX_SIZE = 200
 
-_metadata = MetaData()
-##_metadata.bind = 'sqlite:///'
-#_metadata.bind = 'postgresql+psycopg2://hypo:hypopwd@localhost/hypodb'
-_engine = create_engine('postgresql+psycopg2://hypo:hypopwd@localhost/hypodb')
-
-#_metadata.create_all()
+#_engine = create_engine('postgresql+psycopg2://hypo:hypopwd@localhost/hypodb')
 
 class AlchemyBackend(object):
-    session = None
+    engine = None
+    Session = None
+    
+    @classmethod
+    def configure(cls, connect_url):
+        cls.engine = create_engine(connect_url)
+        cls.Session = sessionmaker(bind = cls.engine)
+        
+    @classmethod
+    def getEngine(cls):
+        if cls.engine :return cls.engine
+        else: raise Exception("Engine is not initialized yet!")
     
     @classmethod
     def getSession(cls):
-        if cls.session is None:
-            Session = sessionmaker(bind=_engine)
-            session = Session()
-        return session
+        if cls.Session : return cls.Session()
+        else: raise Exception("Engine is not initialized yet!")        
 
 class Annotation(dict):
     class _Model(declarative_base()):
@@ -52,8 +57,13 @@ class Annotation(dict):
         permissions = Column(String, default=None)
         thread = Column(String, default = None)
         
-        stores_json_as_string = ['ranges', 'permissions']
+        #TODO: Add Indexes?
+                
+        stores_json_as_string = set(['ranges', 'permissions'])
 
+        def __dir__(self):
+            return ['id','annotator_schema_version','created','updated','quote','tags','text','uri','user','consumer','ranges','permissions','thread']
+        
         def __init__(self):
             pass
 
@@ -62,19 +72,13 @@ class Annotation(dict):
             quote = '' if self.quote is None else self.quote
             return "<Annotation('%s','%s','%s')>" % (self.id, user, quote)
         
-        def __dir__(self):
-            return ['id','annotator_schema_version','created','updated','quote','tags','text','uri','user','consumer','ranges','permissions','thread']
-        
         @classmethod
         def model_json(cls, inst):        
             return ''
-        #TODO: Add indexes
-
-    session = AlchemyBackend.getSession()
         
-    def __init__(self, model = None, *args, **kwargs):
+    def __init__(self, model = None, *args, **kwargs):        
+        self.session = AlchemyBackend.getSession()
         if model and type(model) == Annotation._Model:
-            log.info('Model constructor')
             self.model = model
             for key in dir(model) :
                 if key in Annotation._Model.stores_json_as_string:
@@ -82,9 +86,8 @@ class Annotation(dict):
                 else :
                     dict.__setitem__(self, key, getattr(model, key))
         else :             
-            log.info('Normal constructor')
             self.model = Annotation._Model()
-            self.model.metadata.create_all(_engine) 
+            self.model.metadata.create_all(AlchemyBackend.getEngine()) 
             self.update(model, *args, **kwargs)
 
     #    @classmethod
@@ -97,63 +100,53 @@ class Annotation(dict):
         pass
         #TODO: implement me
     
-    # It would be lovely if this were called 'get', but the dict semantics
-    # already define that method name.
     @classmethod
     def fetch(cls, id):
-        log.info("Fetch - begin")
-        #TODO: expection handling
-        return cls.session.query(_Model).filter(cls.id == id).one()
+        try :
+            res = cls.session.query(_Model).filter(cls.id == id).one()
+        except sqlalchemy.orm.exc.NoResultFound :
+            return None
+        return res
    
     @classmethod     
     def search(cls, **kwargs):
-        log.info("Search - begin") 
         #TODO: Normal implementation
         q = cls._build_query(**kwargs)
         if not q:
             return []        
 
-        log.info(str(q))
         models = q.all()
         res = []
         for model in models:
              res.append(Annotation(model))
-        log.info('result ' + str(res))
         #TODO: write it normally
-        #return q.all()
         return res
 
     @classmethod
     def search_raw(cls, request):
-        log.info("Search raw - begin")
         pass
         #TODO: implement me
 
     @classmethod
     def count(cls, **kwargs):
-        log.info("Count - begin")
         q = cls._build_query(**kwargs)
         if not q:
             return 0
         return q.count()
 
     def save(self, *args, **kwargs):
-        log.info("Save - Begin")
         # For brand new annotations
         _add_created(self)
         _add_default_permissions(self)
-
         # For all annotations about to be saved
         _add_updated(self)
         
-        #self.session.begin()
         self.session.add(self.model)
         self.session.commit()
 
     @classmethod
     def _build_query(cls, offset=0, limit=20, **kwargs):
-        log.info("Build Query - Begin")
-        query = cls.session.query(Annotation._Model)
+        query = AlchemyBackend.getSession().query(Annotation._Model)
         
         if kwargs:
             # Add a term query for each keyword
