@@ -148,6 +148,10 @@ class Annotation(dict):
         #Write back autocolumns
         dict.__setitem__(self, 'id', self.model.id)
 
+    def delete(self):
+        self.session.delete(self)
+        self.session.commit()
+
     @classmethod
     def _build_query(cls, offset=0, limit=20, **kwargs):
         query = AlchemyBackend.getSession().query(Annotation._Model)
