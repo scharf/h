@@ -7,7 +7,6 @@ $sansFontFamily: "Source Sans Pro", $sansFontFamily;
 $serifFontFamily: "Merriweather", $serifFontFamily;
 
 
-
 //ELEMENT STYLES////////////////////////////////
 a {
   color: $linkColor;
@@ -22,10 +21,14 @@ body {
 }
 
 p {
-  margin: 1em 0;
+  margin: 0 0 2em 0;
   -webkit-hyphens: auto;
      -moz-hyphens: auto;
           hyphens: auto;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 em { font-style: italic; }
@@ -85,13 +88,8 @@ label {
 
 
 //MCRANDOM////////////////////////////////
-.btn {
+button, input[type=submit], .btn {
   @include sweetbutton;
-}
-
-.alert-block {
-  span.errorMsgLbl { @extend .visuallyhidden; }
-  span.errorMsg { @extend .visuallyhidden; }
 }
 
 //Candidate for cleanup
@@ -121,11 +119,51 @@ label {
 }
 
 
+//FLASH/TOAST/ALERTS///////////////////////////////
+.toast, .annotator-notice {
+  @include border-radius(.5em);
+  @include smallshadow;
+  @include single-transition(opacity, .2s);
+  border: solid thin;
+  left: 50%;
+  margin-left: -15%;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  text-align: center;
+  top: .25em;
+  width: 30%;
+  z-index: 2000;
+
+  &.show, &.annotator-notice-show {
+    opacity: .8;
+    pointer-events: initial;
+  }
+}
+
+.info, .annotator-notice-info {
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #98BED1;
+}
+
+.success, .annotator-notice-success {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #8DC98E;
+}
+
+.error, .annotator-notice-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #F5A1A0;
+}
+
 
 //CLOSER////////////////////////////////
 .close {
+  @extend .x-icon;
   float: right;
-  @include icon("delete_1.png");
   width: 1em;
   height: 1em;
   opacity: .2;
@@ -154,8 +192,13 @@ label {
 
 .form-vertical {
   select, textarea, input, button {
+    display: block;
     margin-top: .75em;
   }
+}
+
+input.ng-invalid.ng-dirty {
+  border-color: lighten($red, 35%);
 }
 
 .req {
@@ -179,7 +222,6 @@ label {
 }
 
 a {
-
   &.write {
     @include linkbutton;
     background-image: url("../images/pen_1.png");
@@ -207,7 +249,6 @@ a {
 }
 
 
-
 //EXCERPT////////////////////////////////
 .excerpt {
   position: relative;
@@ -232,8 +273,8 @@ blockquote {
 
   &:before {
     color: rgba(150, 150, 150, .5);
-    content: "\201C";
-    font-family: "PT Serif";
+    content: "\23";
+    font-family: "icomoon";
     font-size: 6em;
     position: absolute;
     top: -.2em;
@@ -242,8 +283,8 @@ blockquote {
 
   &:after {
     color: rgba(150, 150, 150, .5);
-    content: "\201E";
-    font-family: "PT Serif";
+    content: "\24";
+    font-family: "icomoon";
     font-size: 5em;
     position: absolute;
     right: -.15em;
@@ -269,8 +310,8 @@ blockquote {
   @include smallshadow;
   background: $white;
   border: solid 1px $grayLighter;
-  border-top: 0;
   left: 0;
+  top: 2em;
   float: left;
   opacity: 0;
   pointer-events: none;
@@ -349,10 +390,6 @@ blockquote {
   &.active {
     display: inherit !important;
   }
-
-  footer > ul {
-    text-align: right;
-  }
 }
 
 
@@ -372,6 +409,16 @@ blockquote {
 //ANNOTATION////////////////////////////////
 //This is for everything that is formatted as an annotation.
 .annotation {
+  position: relative;
+
+  div.body {
+    @include force-wrap;
+  }
+
+  textarea.body {
+    min-height: 8em;
+    width: 100%;
+  }
 
   .user {
     font-weight: bold;
@@ -380,94 +427,136 @@ blockquote {
   }
 
   .time {
-    float: right;
-    display: inline-block;
-    line-height: 2em;
     @include tertiarytext;
-  }
-
-  .body {
-    @include force-wrap;
   }
 
   .bottombar {
     @include pie-clearfix;
+    margin: .25em 0;
+
+    .btn {
+      margin-right: .5em;
+    }
+  }
+
+  .tip {
+    @include tertiarytext;
+    float: right;
+  }
+}
+
+
+//THREADING////////////////////////////////
+//Threaded discussion specific
+.thread {
+  position: relative;
+
+  & > ul {
+    @include single-transition(max-height, .4s, cubic-bezier(1, 0, 1, 0));
+    max-height: 65536px;
+    overflow: hidden;
+
+    padding-left: $thread-padding;
+    margin-left: -$thread-padding;
+
+    & > * {
+      border-left: 1px dotted $grayLight;
+      position: relative;
+    }
+  }
+
+  .thread {
+    height: 100%;
+    padding-left: $thread-padding;
+  }
+
+  .threadexp {
+    height: $threadexp-width;
+    width: $threadexp-width;
+    position: absolute;
+    top: .8em;
+    left: -($threadexp-width / 2);
+    outline: 1px dotted #aaa;
+    @include icon("minus_1.png");
+  }
+
+  .reply-count {
+    @include tertiarytext;
+  }
+
+  .annotation {
+    padding-top: .35em;
+    &.squished {
+      padding-left: 0;
+    }
+  }
+
+  //These are all the changes needed to collapse thread objects.
+  .collapsed {
+    & > .annotation {
+      .body {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        white-space: nowrap;
+        font-style: italic;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .user {
+        display: run-in;
+        margin-right: .25em;
+      }
+    }
+
+    & > ul {
+      @include single-transition(max-height, .4s, cubic-bezier(0, 1, 0, 1));
+      max-height: 0;
+    }
+
+    & > .threadexp {
+      background-image: url("../images/plus_1.png");
+    }
   }
 }
 
 
 
-//DETAIL////////////////////////////////
-//This is specific to the detail view.
-.detail {
-  position: relative;
-  .paper > .threadexp {
-    display: none;
-  }
+//MAGICONTROLS////////////////////////////////
+.magicontrols {
+  background-color: $bodyBackground;
+  float: right;
 
-  .annotator-controls {
-    @include single-transition(opacity, .25s, ease-in-out);
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    z-index: 1;
-  }
-
-  .replycount {
+  & > * {
+    @include transition(
+      opacity 0.1s ease-in-out .25s,
+      font-size .1s ease-in-out .25s,
+      margin .1s ease-in-out .25s,
+      opacity .1s ease-in-out .25s
+    );
     @include tertiarytext;
+    float: left;
+    margin-left: .5em;
   }
 
-  .bottombar {
-    margin-bottom: .25em;
+  .show {
+    font-size: 0;
+    opacity: 0;
   }
 
-  //Threaded discussion specific
-  .annotator-listing {
-    border-left: 1px dotted $grayLight;
-
-    .threadexp {
-      height: $threadexp-width;
-      width: $threadexp-width;
-      position: absolute;
-      top: .8em;
-      left: -($threadexp-width / 2);
-      outline: 1px dotted #aaa;
-      @include icon("minus_1.png");
+  .detail:hover & {
+    & > * {
+      font-size: 1em;
     }
 
-    & > .detail, .writer {
-      padding-left: $thread-padding;
-      padding-top: .35em;
-      &.squished {
-        padding-left: 0;
-      }
-    }
-  }
-
-  &.hover {
-    & > .annotator-controls {
+    .show {
       opacity: 1;
     }
-  }
 
-  //These are all the changes needed to collapse thread objects.
-  &.collapsed {
-    & > .body {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      -o-text-overflow: ellipsis;
-      white-space: nowrap;
-      font-style: italic;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    & > .thread { overflow: hidden; }
-    & > .user {
-      display: run-in;
-      margin-right: .25em;
-    }
-    & > .threadexp {
-      background-image: url("../images/plus_1.png");
+    .time {
+      opacity: 0;
+      text-size: 0;
     }
   }
 }
@@ -490,25 +579,9 @@ blockquote {
     @include smallshadow(2px, 1px, .1);
     bottom: 0px;
   }
-}
 
-
-
-//EDITOR////////////////////////////////
-//This is an input element to make annotations.
-.writer {
-  position: relative;
-  padding-left: 1em;
-
-  textarea {
-    width: 100%;
-    min-height: 8em;
-  }
-
-  .bottombar {
-    margin-top: .25em;
-    .btn {
-      margin-right: .5em;
-    }
+  // Things not shown in the summary view
+  .annotator-controls, .magicontrols .show, .bottombar, {
+    display: none;
   }
 }

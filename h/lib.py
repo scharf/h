@@ -6,6 +6,14 @@ from h import interfaces
 
 
 class WeakMemoizedProperty(property):
+    """A property which memoizes the result of its getter
+
+    Use this property when re-computing the value on each access is
+    undesirable but reification of the value is inappropriate because a
+    setter function is needed. All memoized values are cached using a weak
+    reference to the owner object so there is no need to worry about cache
+    cleanup.
+    """
     memo = weakref.WeakKeyDictionary()
 
     def __get__(self, obj, objtype=None):
@@ -47,21 +55,17 @@ def set_user(request, user):
     # Must extract the id here since pyramid_tm will cause the database
     # session to be invalid by the time this runs.
     if user is not None:
-        user_id = user.id
+        headers = remember(request, user.id)
     else:
-        user_id = None
-        request.session.invalidate()
+        headers = forget(request)
 
     def _set_auth_headers(request, response):
-        if user_id is None:
-            headers = forget(request)
-        else:
-            headers = remember(request, user_id)
-        response.headerlist.extend(headers)
+        response.headerlist.extend(getattr(request, '_user_modified'))
 
     if not hasattr(request, '_user_modified'):
         request.add_response_callback(_set_auth_headers)
-        setattr(request, '_user_modified', True)
+
+    setattr(request, '_user_modified', headers)
 
 
 user_property = WeakMemoizedProperty(

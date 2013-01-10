@@ -71,9 +71,7 @@ class AppController(views.BaseController):
             return {
                 'status': 'failure',
                 'reason': messages.INVALID_FORM,
-                'form': {
-                    'login': e.render()
-                }
+                'error': e.error.asdict(),
             }
 
         try:
@@ -82,24 +80,16 @@ class AppController(views.BaseController):
                 appstruct['password'],
             )
         except exceptions.AuthenticationFailure as e:
-            form.error = colander.Invalid(form.schema, e)
             return {
                 'status': 'failure',
-                'reason': e.message,
-                'form': {
-                    'login': form.render(appstruct),
-                }
+                'reason': str(e),
             }
 
         request.user = user
 
-        return {
-            'status': 'okay',
-            'form': {
-                'login': form.render()
-            },
-            'model': self(),
-        }
+        result = self()
+        result.update(status='okay')
+        return result
 
     @view_config(request_method='POST', request_param='__formid__=register')
     def register(self):
@@ -112,9 +102,7 @@ class AppController(views.BaseController):
             return {
                 'status': 'failure',
                 'reason': messages.INVALID_FORM,
-                'form': {
-                    'register': e.render()
-                }
+                'error': e.error.asdict(),
             }
 
         try:
@@ -124,23 +112,18 @@ class AppController(views.BaseController):
                 appstruct['password'],
             )
         except exceptions.RegistrationFailure as e:
-            form.error = colander.Invalid(form.schema, str(e))
             return {
-                'form': {
-                    'register': form.render(appstruct)
-                },
+                'status': 'failure',
+                'reason': str(e)
             }
 
         if request.registry.settings.get('horus.autologin', False):
             self.db.flush()  # to get the id
             request.user = user
 
-        return {
-            'form': {
-                'register': form.render()
-            },
-            'model': self(),
-        }
+        result = self()
+        result.update(status='okay')
+        return result
 
     @view_config(request_method='POST', request_param='__formid__=activate')
     def activate(self):
@@ -154,9 +137,7 @@ class AppController(views.BaseController):
             return {
                 'status': 'failure',
                 'reason': messages.INVALID_FORM,
-                'form': {
-                    'activate': e.render()
-                },
+                'error': e.error.asdict(),
             }
         else:
             code = appstruct['code']
@@ -176,17 +157,12 @@ class AppController(views.BaseController):
                 return {
                     'status': 'failure',
                     'reason': messages.INVALID_FORM,
-                    'form': {
-                        'activate': form.render(appstruct)
-                    },
+                    'error': e.error.asdict(),
                 }
 
-        return {
-            'status': 'okay',
-            'form': {
-                'activate': form.render()
-            },
-        }
+        result = self()
+        result.update(status='okay')
+        return result
 
     @view_config(request_method='POST', request_param='__formid__=forgot')
     def forgot(self):
@@ -197,26 +173,24 @@ class AppController(views.BaseController):
         result = controller.forgot_password()
         if isinstance(result, dict):
             if 'errors' in result:
-                error = colander.Invalid(
-                    form.schema,
-                    messages.INVALID_FORM
-                )
-                error.children = result.pop('errors')
-                form.widget.handle_error(form, error)
-            result = {
-                'form': {
-                    'forgot': form.render()
+                error = colander.Invalid(form.schema, messages.INVALID_FORM)
+                return {
+                    'status': 'failure',
+                    'reason': messages.INVALID_FORM,
+                    'error': error.asdict(),
                 }
-            }
-        else:
-            # TODO: take care of flash success message
-            return None
+        result = self()
+        result.update(status='okay')
         return result
 
     @view_config(name='logout')
     def logout(self):
         self.auth_controller.logout()
         self.request.user = None
+
+        result = self()
+        result.update(status='okay')
+        return result
 
     @view_config(name='token', renderer='string')
     def token(self):
@@ -226,27 +200,26 @@ class AppController(views.BaseController):
         else:
             return token
 
-    @view_config(name='model', renderer='json', xhr=True)
+    @view_config(renderer='json', xhr=True)
     def __call__(self):
         request = self.request
+        session = request.session
+        flash = {
+            name[3:]: session.pop_flash(name[3:])
+            for name in session.keys()
+            if name.startswith('_f_')
+        }
         model = {
             name: getattr(request.context, name)
             for name in ['persona', 'personas', 'token']
         }
         model.update(tokenUrl=request.resource_url(request.context, 'token'))
-        return model
+        return dict(flash=flash, model=model)
 
     @view_config(renderer='h:templates/app.pt')
     def __html__(self):
         request = self.request
-
-        layout = request.layout_manager.layout
-        for name in ['login', 'forgot', 'register', 'activate']:
-            form = getattr(self, '%s_form' % name)
-            layout.add_form(form)
-
         token_url = request.resource_url(request.root, 'api', 'access_token')
-
         return {'token_url': token_url}
 
 

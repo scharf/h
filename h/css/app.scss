@@ -18,21 +18,7 @@ body {
   width: 100%;
 }
 
-input { width: 100%; }
 svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
-
-
-
-//HIDDEN TABS////////////////////////////////
-.nav a[data-target="#activate-tab"],
-.nav a[data-target="#forgot-tab"] {
-  display: none;
-}
-
-.nav .active a[data-target="#activate-tab"],
-.nav .active a[data-target="#forgot-tab"] {
-  display: initial;
-}
 
 
 
@@ -42,37 +28,67 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
   visibility: hidden;
 }
 
-.annotator-heatmap {
-  background: hsla(0, 0, 0, .1);
-  border: solid thin rgba($grayLighter, .4);
-  left: 17px;
+
+
+.sliding-panels > li {
+  @include smallshadow(-2px);
+  @include transition(transform .4s);
+  @include translateZ(0);
+  background: url('../images/noise_1.png');
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 1em;
+  position: absolute;
   height: 100%;
-  position: fixed;
-  top: 0;
-  width: $heatmap-width;
+  left: 0;
+  right: 0;
+  
+  &:first-child {
+    @include box-shadow(none);
+    left: 0em !important;
+  }
+
+  &:last-child {
+    left: 1em;
+  }
+
+  &.collapsed {
+    @include translateX(100%);
+  }
+
+  &.squished {
+    padding-left: .5em;
+  }
 }
 
-
-
 //SIDEBAR LAYOUT////////////////////////////////
-#gutter {
+#wrapper {
   background: url('../images/noise_1.png');
-  background-attachment: fixed;
   height: 100%;
   margin-left: $heatmap-width + 17px;
+  padding-top: 2.5em;
   position: relative;
 }
 
-#wrapper {
+
+
+//HEATMAP STUFF////////////////////////////////
+.annotator-heatmap {
   height: 100%;
-  overflow: auto;
-  padding: 3.75em 1em 1em 1em;
-  -webkit-overflow-scrolling: touch;
+  position: fixed;
+  top: 0;
+ 
+  svg {
+    background: hsla(0, 0, 0, .1);
+    border: solid thin rgba($grayLighter, .4);
+    left: 17px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: $heatmap-width;
+  }
 }
 
-
-
-//HEATMAP POINTERS////////////////////////////////
 .heatmap-pointer {
   @include user-select(none);
   @include transition-property(left);
@@ -81,7 +97,7 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
   // color: rgb(238, 238, 238);
   color: #666;
   left: 0px;
-  position: fixed;
+  position: absolute;
   height: 20.1px;
   width: 40.1px;
   vertical-align: middle;
@@ -162,45 +178,57 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
 
 
 //SHEET////////////////////////////////
-//This comes down from under things.
+//This comes down from under the toolbar
 .sheet {
-  @include box-shadow(5px 5px 40px hsla(0, 0%, 0%, .1));
-  @include single-transition(all, .4s, ease-in-out);
-  @include transform-origin(50%, 0);
-  z-index: 4;
-  background: url('../images/noise_1.png');
-  background-attachment: fixed;
-  margin-top: 2.5em;
-  padding-top: 1em;
+  @include transition(
+    max-height .8s ease-in-out,
+    opacity .4s ease-in-out
+  );
+  max-height: 30em;
+  opacity: 1;
+
   position: absolute;
-  width: 100%;
+  text-align: left;
+
+  left: .3em;
+  right: 0;
+  top: .3em;
 
   .close {
-    margin-right: .5em;
-    margin-top: .25em;
+    position: absolute;
+    right: 1em;
+    top: 0;
   }
 
   &.collapsed {
-    @include rotateX(90deg);
+    max-height: 0;
     opacity: 0;
-    pointer-events: none;
+    overflow: hidden;
+
+    footer {
+      opacity: 0;
+    }
   }
 
-  &.info {
-    color: #3a87ad;
-    background-color: #d9edf7;
-    border-color: #98BED1;
+  .nav-tabs {
+    padding-left: 1.3em;
   }
-  &.good {
-    color: #468847;
-    background-color: #dff0d8;
-    border-color: #8DC98E;
+
+  .tab-pane {
+    @include box-shadow(5px 5px 3px hsla(0, 0%, 0%, .1));
   }
-  &.bad {
-    color: #b94a48;
-    background-color: #f2dede;
-    border-color: #F5A1A0;
+
+  footer {
+    @include single-transition(opacity, 1s, ease-in-out, 1s);
+    float: right;
+    left: -1em;
+    position: relative;
+    text-align: right;
+    top: -3.5em;
+    a { @include tertiarytext; }
   }
+
+  input:not([type="submit"]) { width: 100%; }
 }
 
 
@@ -208,55 +236,77 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
 //TOOL BAR////////////////////////////////
 #toolbar {
   @include smallshadow;
-  background: white;
-  border: 1px solid $grayLighter;
+  background: $bodyBackground;
+  border: .1em solid $grayLighter;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
-  left: 1px;
-  line-height: $baseLineHeight;
-  margin-top: .5em;
-  padding: .3em;
-  position: absolute;
-  text-align: right;
-  width: 100%;
-  z-index: 5;
   left: 7px;
+  min-height: 2.2em;
+  position: absolute;
+  right: -.1em;
+  text-align: right;
+  top: .5em;
+  z-index: 5;
 
-  & > div {
+  .tinyman {
+    border-left: 1px solid $grayLighter;
     display: inline-block;
-    vertical-align: top;
-
-    &:last-child {
-      border-left: 1px solid $grayLighter;
-    }
+    margin: .3em;
   }
 
   .tri {
-    @include icon("tri-left.png");
-    float: left;
-    width: $baseLineHeight;
-    height: $baseLineHeight;
-    cursor: w-resize;
+    @include fonticon("\e00b", left);
+    color: rgba( 200, 200, 200, 0.3);
+    text-shadow:
+      1px .8px 1.5px #fff,
+      0 0 0 #000;
+    position: absolute;
+    z-index: 1;
+    top: .3em;
+    left: .3em;
+    line-height: $baseLineHeight * .9;
+    font-size: $baseLineHeight * .9;
+    &:before {
+      vertical-align: 0;
+    }
+    &:hover {
+      color: rgba( 235, 235, 230, 0.1);
+    }
   }
 
   &.shown {
     .tri {
-      @include icon("tri-right.png");
-      margin-right: .7em;
+      @include fonticon("\e010", left);
+      color: rgba( 200, 200, 200, 0.3);
+      text-shadow:
+        1px .8px 1.5px #fff,
+        0 0 0 #000;
+      position: absolute;
+      z-index: 1;
+      top: .3em;
+      left: .3em;
+      line-height: $baseLineHeight * .9;
+      font-size: $baseLineHeight * .9;
+      cursor: ew-resize;
+      &:before {
+        vertical-align: 0;
+      }
+      &:hover {
+        color: rgba( 235, 235, 230, 0.1);
+      }
     }
   }
 }
 
 .tinyman {
-  padding: 0 .3em;
+  padding: 0 .5em;
 
   .avatar {
     border-radius: 2px;
   }
 
   .dropdown-toggle {
-    @include linkbutton_right;
-    background-image: url("../images/dropdown_1.png");
+    @include fonticon("\002f", right, 0em);
     .provider {
       color: $grayLight;
       display: none;
