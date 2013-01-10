@@ -12,6 +12,7 @@ import iso8601
 from annotator import authz
 import json
 import datetime
+import uuid
 
 import logging
 
@@ -41,7 +42,7 @@ class Annotation(dict):
     class _Model(declarative_base()):
         __tablename__ = 'annotations'
         
-        id = Column(Integer, primary_key = True)
+        id = Column(String, primary_key = True,  autoincrement=True)
         annotator_schema_version = Column(String, default = None)
         created = Column(DateTime(timezone=True), default = None)
         updated = Column(DateTime(timezone=True), default = None)
@@ -58,9 +59,15 @@ class Annotation(dict):
         #TODO: Add Indexes?
                 
         stores_json_as_string = set(['ranges', 'permissions'])
+        skip_from_json_if_null = set(['thread'])
 
         def __dir__(self):
             return ['id','annotator_schema_version','created','updated','quote','tags','text','uri','user','consumer','ranges','permissions','thread']
+        
+        __mapper_args__ = {
+            'version_id_col' : id, 
+            'version_id_generator' : lambda version:uuid.uuid4().hex
+        }
         
         def __init__(self):
             pass
@@ -79,7 +86,9 @@ class Annotation(dict):
         if model and type(model) == Annotation._Model:
             self.model = model
             for key in dir(model) :
-                if key in Annotation._Model.stores_json_as_string:
+                if  key in Annotation._Model.skip_from_json_if_null and getattr(model, key) is None :
+                    continue                
+                if key in Annotation._Model.stores_json_as_string and getattr(model, key):
                     dict.__setitem__(self, key, json.loads(getattr(model, key)))
                 else :
                     dict.__setitem__(self, key, getattr(model, key))
@@ -182,6 +191,8 @@ class Annotation(dict):
     def to_json(cls, inst):
         res = {}
         for key, value in inst.items() :
+            if  key in Annotation._Model.skip_from_json_if_null and value is None :
+                continue
             if  key in Annotation._Model.stores_json_as_string :
                 res[key] = json.loads(value)
             else :
