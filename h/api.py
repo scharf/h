@@ -1,6 +1,7 @@
 from annotator import auth, authz, store, es
 #from annotator.annotation import Annotation
-from annotation import Annotation, AlchemyBackend
+from annotation import Annotation
+from annotation import AlchemyBackend
 
 from flask import Flask, g
 

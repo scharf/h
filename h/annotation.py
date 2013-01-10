@@ -18,8 +18,6 @@ import logging
 log = logging.getLogger(__name__)
 RESULTS_MAX_SIZE = 200
 
-#_engine = create_engine('postgresql+psycopg2://hypo:hypopwd@localhost/hypodb')
-
 class AlchemyBackend(object):
     engine = None
     Session = None
@@ -87,18 +85,16 @@ class Annotation(dict):
                     dict.__setitem__(self, key, getattr(model, key))
         else :             
             self.model = Annotation._Model()
-            self.model.metadata.create_all(AlchemyBackend.getEngine()) 
             self.update(model, *args, **kwargs)
 
-    #    @classmethod
+    @classmethod
     def update_settings(cls):
+        '''This method is called by store.py but it has no relevant meaning here'''
         pass
-        #TODO: implement me
-        
+               
     @classmethod
     def create_all(cls):
-        pass
-        #TODO: implement me
+        Annotation._Model().metadata.create_all(AlchemyBackend.getEngine()) 
     
     @classmethod
     def fetch(cls, id):
@@ -110,7 +106,6 @@ class Annotation(dict):
    
     @classmethod     
     def search(cls, **kwargs):
-        #TODO: Normal implementation
         q = cls._build_query(**kwargs)
         if not q:
             return []        
@@ -119,13 +114,11 @@ class Annotation(dict):
         res = []
         for model in models:
              res.append(Annotation(model))
-        #TODO: write it normally
         return res
 
     @classmethod
     def search_raw(cls, request):
-        pass
-        #TODO: implement me
+        raise Exception('Not supported in this implementation. May add direct SQL query option here.')
 
     @classmethod
     def count(cls, **kwargs):
@@ -143,6 +136,8 @@ class Annotation(dict):
         
         self.session.add(self.model)
         self.session.commit()
+        #Write back autocolumns
+        dict.__setitem__(self, 'id', self.model.id)
 
     @classmethod
     def _build_query(cls, offset=0, limit=20, **kwargs):
@@ -151,18 +146,16 @@ class Annotation(dict):
         if kwargs:
             # Add a term query for each keyword
             for k, v in kwargs.iteritems():
-                 query.filter(k == v)           
+                query = query.filter(getattr(Annotation._Model,k) == v)           
 
         if current_app.config.get('AUTHZ_ON'):
             f = authz.permissions_filter(g.user)
             if not f:
                 return False # Refuse to perform the query
-            else:
-                pass
-                #TODO: q['query'] = {'filtered': {'query': q['query'], 'filter': f}}
-        query.offset(max(0, offset))
-        query.limit(min(RESULTS_MAX_SIZE, max(0, limit)))
-        query.order_by(desc('updated'))
+            #Not needed: q['query'] = {'filtered': {'query': q['query'], 'filter': f}}
+        query = query.order_by(desc('updated'))
+        query = query.limit(min(RESULTS_MAX_SIZE, max(0, limit)))
+        query = query.offset(max(0, offset))
         return query
 
     #Customizing Dict to be sync with the _Model
@@ -209,4 +202,3 @@ def _add_updated(ann):
 def _add_default_permissions(ann):
     if 'permissions' not in ann:
         ann['permissions'] = {'read': [authz.GROUP_CONSUMER]}
-
