@@ -13,7 +13,7 @@
 	6.	Grant priviledges for the created user on the created db:
 		GRANT ALL PRIVILEGES ON DATABASE hypo_db to hypo_backend;
 	7.	Quit from psql:
-		\o
+		\\q
 	8.	Test your user (assuming your db is installed to localhost):
 		psql -h localhost -d hypo_db -U hypo_backend
 		After  giving the password you should see the hypo_db => prompt
@@ -39,6 +39,7 @@
 	3.	Edit the development.ini to enter the connect_string
 		backend.url: postgresql+psycopg2://<user>:<password>@<dbhost:port>/<db>
 		i.e.
+
 		backend.url: postgresql+psycopg2://hypo_backend:myPassword@localhost/hypo_db
 	
 If all works well then starting the application does not require a running elasticsearch instance and it'll work just as the original backend. :)
