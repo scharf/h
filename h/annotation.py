@@ -1,9 +1,7 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import create_session, sessionmaker
-from sqlalchemy import Column, Integer, String, DateTime, Text, desc, create_engine
+from pyramid_basemodel import Base, BaseMixin, Session
+
+from sqlalchemy import Column, Integer, String, DateTime, Text, desc
 from sqlalchemy.schema import Index
-#from sqlalchemy.dialects.postgresql import ARRAY, HSTORE
-#from sqlalchemy.ext.mutable import MutableDict 
 
 from annotator.jsonencoderregistry import JSONEncoderRegistry
 
@@ -19,27 +17,8 @@ import logging
 log = logging.getLogger(__name__)
 RESULTS_MAX_SIZE = 200
 
-class AlchemyBackend(object):
-    engine = None
-    Session = None
-    
-    @classmethod
-    def configure(cls, connect_url):
-        cls.engine = create_engine(connect_url)
-        cls.Session = sessionmaker(bind = cls.engine)
-        
-    @classmethod
-    def getEngine(cls):
-        if cls.engine :return cls.engine
-        else: raise Exception("Engine is not initialized yet!")
-    
-    @classmethod
-    def getSession(cls):
-        if cls.Session : return cls.Session()
-        else: raise Exception("Engine is not initialized yet!")        
-
 class Annotation(dict):
-    class _Model(declarative_base()):
+    class _Model(Base, BaseMixin):
         __tablename__ = 'annotations'
         
         id = Column(String, primary_key = True,  autoincrement=True)
@@ -82,7 +61,7 @@ class Annotation(dict):
             return ''
         
     def __init__(self, model = None, *args, **kwargs):        
-        self.session = AlchemyBackend.getSession()
+        self.session = Session()
         if model and type(model) == Annotation._Model:
             self.model = model
             for key in dir(model) :
@@ -103,7 +82,9 @@ class Annotation(dict):
                
     @classmethod
     def create_all(cls):
-        Annotation._Model().metadata.create_all(AlchemyBackend.getEngine()) 
+        ''' Create_all is automatically handled by the pyramid.basemodel.bind_engine()
+            Manual calling is not needed'''
+        pass
     
     @classmethod
     def fetch(cls, id):
@@ -144,17 +125,17 @@ class Annotation(dict):
         _add_updated(self)
         
         self.session.add(self.model)
-        self.session.commit()
+        self.session.flush()
         #Write back autocolumns
         dict.__setitem__(self, 'id', self.model.id)
 
     def delete(self):
         self.session.delete(self)
-        self.session.commit()
+        self.session.flush()
 
     @classmethod
     def _build_query(cls, offset=0, limit=20, **kwargs):
-        query = AlchemyBackend.getSession().query(Annotation._Model)
+        query = Session().query(Annotation._Model)
         
         if kwargs:
             # Add a term query for each keyword
@@ -205,14 +186,14 @@ class Annotation(dict):
     
 JSONEncoderRegistry.register_json_serializer(Annotation, Annotation.to_json)    
 JSONEncoderRegistry.register_json_serializer(Annotation._Model, Annotation._Model.model_json)    
-JSONEncoderRegistry.register_json_serializer(datetime.datetime, str)    
+JSONEncoderRegistry.register_json_serializer(datetime.datetime, datetime.datetime.isoformat)    
         
 def _add_created(ann):
     if 'created' not in ann:
-        ann['created'] = unicode(datetime.datetime.now(iso8601.iso8601.UTC).isoformat())
+        ann['created'] = datetime.datetime.now(iso8601.iso8601.UTC)
 
 def _add_updated(ann):
-    ann['updated'] = datetime.datetime.now(iso8601.iso8601.UTC).isoformat()
+    ann['updated'] = datetime.datetime.now(iso8601.iso8601.UTC)
 
 def _add_default_permissions(ann):
     if 'permissions' not in ann:

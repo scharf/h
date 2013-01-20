@@ -1,7 +1,6 @@
 from annotator import auth, authz, store, es
 #from annotator.annotation import Annotation
 from annotation import Annotation
-from annotation import AlchemyBackend
 
 from flask import Flask, g
 
@@ -43,8 +42,6 @@ def includeme(config):
 
     # Set up the models
     settings = config.get_settings()
-    if 'backend.url' in settings:
-        AlchemyBackend.configure(settings['backend.url'])
     #TODO: Maybe es related settings are not required
     if 'es.host' in settings:
         app.config['ELASTICSEARCH_HOST'] = settings['es.host']
