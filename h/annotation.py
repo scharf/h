@@ -167,10 +167,7 @@ class Annotation(dict):
         setattr(self.model, key, None)
         
     def __json__(self):
-        res = {}
-        for key, value in self.items() :
-            res[key] = value
-        return res
+        return dict((key, value) for key, value in self.items())
     
 def _add_created(ann):
     if 'created' not in ann:
