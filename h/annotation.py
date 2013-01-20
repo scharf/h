@@ -1,11 +1,13 @@
-from pyramid_basemodel import Base, BaseMixin, Session
+from pyramid_basemodel import Base, Session
+from horus.models import BaseModel
+from annotator import authz
 
 from sqlalchemy import Column, Integer, String, DateTime, Text, desc
 from sqlalchemy.schema import Index
+import sqlalchemy.types as types
 
 from flask import current_app, g
 import iso8601
-from annotator import authz
 import json
 import datetime
 import uuid
@@ -15,8 +17,18 @@ import logging
 log = logging.getLogger(__name__)
 RESULTS_MAX_SIZE = 200
 
+class JsonString(types.TypeDecorator):
+    impl = types.String
+    
+    def process_bind_param(self, value, dialect):
+        return json.dumps(value)
+    
+    def process_result_value(self, value, dialect):
+        if not value : return value
+        else : return json.loads(value)
+
 class Annotation(dict):
-    class _Model(Base, BaseMixin):
+    class _Model(Base, BaseModel):
         __tablename__ = 'annotations'
         
         id = Column(String, primary_key = True,  autoincrement=True)
@@ -29,12 +41,10 @@ class Annotation(dict):
         uri = Column(String, default = None, index = True)
         user = Column(String, default = None)
         consumer = Column(String, default = None)
-        ranges = Column(String, default = None)
-        permissions = Column(String, default=None)
+        ranges = Column(JsonString, default = None)
+        permissions = Column(JsonString, default=None)
         thread = Column(String, default = None, index = True)
         
-        stores_json_as_string = set(['ranges', 'permissions'])
-
         def __dir__(self):
             return ['id','annotator_schema_version','created','updated','quote','tags','text','uri','user','consumer','ranges','permissions','thread']
         
@@ -59,10 +69,7 @@ class Annotation(dict):
         if model and type(model) == Annotation._Model:
             self.model = model
             for key in dir(model) :
-                if key in Annotation._Model.stores_json_as_string and getattr(model, key):
-                    dict.__setitem__(self, key, json.loads(getattr(model, key)))
-                else :
-                    dict.__setitem__(self, key, getattr(model, key))
+                dict.__setitem__(self, key, getattr(model, key))
         else :             
             self.model = Annotation._Model()
             self.update(model, *args, **kwargs)
@@ -152,24 +159,17 @@ class Annotation(dict):
  
     def __setitem__(self, key, value):    
         dict.__setitem__(self, key, value)
-        if key in Annotation._Model.stores_json_as_string:
-            #Workaround for strange SQLAlchemy Array Bug / HStore limitation
-            saved_value = json.dumps(value)
-        else :
-            saved_value =  value         
+        saved_value =  value         
         setattr(self.model, key, saved_value)
 
     def __delitem__(self, key):
         dict.__delitem__(self, key)
         setattr(self.model, key, None)
         
-    def __json__(self):        
+    def __json__(self):
         res = {}
         for key, value in self.items() :
-            if  key in Annotation._Model.stores_json_as_string :
-                res[key] = json.loads(value)
-            else :
-                res[key] = value
+            res[key] = value
         return res
     
 def _add_created(ann):
