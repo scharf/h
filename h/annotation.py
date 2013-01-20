@@ -3,8 +3,6 @@ from pyramid_basemodel import Base, BaseMixin, Session
 from sqlalchemy import Column, Integer, String, DateTime, Text, desc
 from sqlalchemy.schema import Index
 
-from annotator.jsonencoderregistry import JSONEncoderRegistry
-
 from flask import current_app, g
 import iso8601
 from annotator import authz
@@ -56,8 +54,7 @@ class Annotation(dict):
             quote = '' if self.quote is None else self.quote
             return "<Annotation('%s','%s','%s')>" % (self.id, user, quote)
         
-        @classmethod
-        def model_json(cls, inst):        
+        def __json__(self):        
             return ''
         
     def __init__(self, model = None, *args, **kwargs):        
@@ -171,11 +168,9 @@ class Annotation(dict):
         dict.__delitem__(self, key)
         setattr(self.model, key, None)
         
-    #Manual jsoning
-    @classmethod
-    def to_json(cls, inst):
+    def __json__(self):        
         res = {}
-        for key, value in inst.items() :
+        for key, value in self.items() :
             if  key in Annotation._Model.skip_from_json_if_null and value is None :
                 continue
             if  key in Annotation._Model.stores_json_as_string :
@@ -184,10 +179,6 @@ class Annotation(dict):
                 res[key] = value
         return res
     
-JSONEncoderRegistry.register_json_serializer(Annotation, Annotation.to_json)    
-JSONEncoderRegistry.register_json_serializer(Annotation._Model, Annotation._Model.model_json)    
-JSONEncoderRegistry.register_json_serializer(datetime.datetime, datetime.datetime.isoformat)    
-        
 def _add_created(ann):
     if 'created' not in ann:
         ann['created'] = datetime.datetime.now(iso8601.iso8601.UTC)
