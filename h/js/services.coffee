@@ -53,8 +53,11 @@ class Hypothesis extends Annotator
           id: a.id
           references: a.thread?.split '/'
 
+    console.log "This is a debug version."
+
     # Before annotations are loaded, scan the document
-    this.subscribe 'loadingAnnotations', =>        
+    this.subscribe 'loadingAnnotations', =>
+      console.log "Gonna load annotations."
       $rootScope.$apply =>
         @provider.prepareForLoad()
 
