@@ -4,9 +4,15 @@ import json
 
 from pyramid.renderers import render
 from pyramid.view import view_config
-
+from pyramid.response import Response
+from flask import g
 from horus.views import BaseController
+import json
 
+import logging
+log = logging.getLogger('view')
+#TODO: Access annotation class normally
+from annotator.annotation import Annotation
 
 @view_config(http_cache=(0, {'must-revalidate': True}),
              renderer='templates/embed.txt', route_name='embed')
@@ -25,6 +31,23 @@ def home(request):
     return {
         'embed': render('templates/embed.txt', embed(request, False), request)
     }
+
+@view_config(route_name='displayer',
+             renderer='h:templates/displayer.pt')
+def displayer(request):
+    uid = request.matchdict['uid']
+    annotation = Annotation.fetch(uid)
+    if not annotation : 
+        raise httpexceptions.HTTPNotFound()
+
+    for header, value in request.headers.items():
+        log.info(header + " : " + value)
+    if 'Content-Type' in request.headers and request.headers['Content-Type'].lower() == 'application/json' :
+        res = json.dumps(annotation, indent=None if request.is_xhr else 2)
+        return Response(res, content_type = 'application/json')
+    else :
+        return {}
+
 
 
 def includeme(config):
