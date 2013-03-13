@@ -150,7 +150,9 @@ class Annotator.Host extends Annotator
           $('html, body').stop().animate {scrollTop: y}, 600
 
         prepareForLoad: =>
+          console.log "In prepareForLoad"
           this.cleanChangedQuotes()
+          console.log "Calling scan 1"
           this.scanDocument "Preparing for the loading of annotations"
 
         scanDocument: (reason = "something happened") =>
@@ -167,6 +169,7 @@ class Annotator.Host extends Annotator
 
 
   scanDocument: (reason = "something happened") =>
+    console.log "In scanDocument"        
     try      
       console.log "Analyzing host frame, because " + reason + "..."
       r = @domMatcher.scan()
