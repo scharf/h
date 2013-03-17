@@ -3,6 +3,8 @@ import re
 from webassets import Bundle
 from webassets.loaders import PythonLoader
 
+import logging
+log = logging.getLogger('assets')
 
 def Uglify(*names, **kw):
     kw.setdefault('filters', 'uglifyjs')
@@ -16,6 +18,10 @@ def Coffee(*names, **kw):
 
 def SCSS(*names, **kw):
     kw.setdefault('filters', 'cleancss,compass,cssrewrite')
+    return Bundle(*names, **kw)
+
+def CSS(*names, **kw):
+    kw.setdefault('filters', 'cleancss,cssrewrite')
     return Bundle(*names, **kw)
 
 #
@@ -123,8 +129,10 @@ app = Bundle(
     SCSS('h:css/app.scss', depends=(base + common), output='css/app.css'),
 )
 
+displayer = CSS('h:css/displayer.css', output='css/displayer.css')
 
 site = SCSS('h:css/site.scss', depends=(base + common), output='css/site.css')
+atom = SCSS('h:css/atom.scss', depends=(base + common), output='css/atom.css')
 
 
 # The inject is a easyXDM consumer which loads the annotator in an iframe
@@ -151,6 +159,7 @@ class WebassetsResourceRegistry(object):
 
         urls = []
         for name in zip(*requirements)[0]:
+            log.info('name: ' + str(name))
             if name in self.env:
                 bundle = self.env[name]
                 urls.extend(bundle.urls())
@@ -176,6 +185,7 @@ def includeme(config):
     loader = PythonLoader(config.registry.settings.get('h.assets', __name__))
     bundles = loader.load_bundles()
     for name in bundles:
+        log.info('name: ' + str(name))
         config.add_webasset(name, bundles[name])
 
     from deform.field import Field

@@ -223,6 +223,5 @@ class AppController(views.BaseController):
         token_url = request.resource_url(request.root, 'api', 'access_token')
         return {'token_url': token_url}
 
-
 def includeme(config):
     config.scan(__name__)
