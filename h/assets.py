@@ -129,10 +129,13 @@ app = Bundle(
     SCSS('h:css/app.scss', depends=(base + common), output='css/app.css'),
 )
 
-displayer = CSS('h:css/displayer.css', output='css/displayer.css')
+display = Bundle(
+    angular,
+    jquery,
+    CSS('h:css/displayer.css', output='css/displayer.css')
+)
 
 site = SCSS('h:css/site.scss', depends=(base + common), output='css/site.css')
-atom = SCSS('h:css/atom.scss', depends=(base + common), output='css/atom.css')
 
 
 # The inject is a easyXDM consumer which loads the annotator in an iframe
