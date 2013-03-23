@@ -12,6 +12,9 @@ from h.displayer import DisplayerTemplate as Displayer
 
 from annotator.annotation import Annotation
 
+import logging
+log = logging.getLogger(__name__)
+
 @view_config(http_cache=(0, {'must-revalidate': True}),
              renderer='templates/embed.txt', route_name='embed')
 def embed(request, standalone=True):
@@ -43,7 +46,8 @@ def displayer(request):
         res = json.dumps(annotation, indent=None if request.is_xhr else 2)
         return Response(res, content_type = 'application/json')
     else :
-        return Displayer(annotation).generate_dict()        
+        replies = Annotation.search_full(thread = annotation['id'])
+        return Displayer(annotation, replies).generate_dict()        
 
 
 def includeme(config):
