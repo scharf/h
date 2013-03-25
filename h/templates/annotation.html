@@ -32,13 +32,6 @@
     </div>
   </div>
 
-<div class="share-dialog" data-ng-show="shared && !editing">
-    <div class="icon-input">
-      <input type="text" value="{{shared_link}}"/>
-      <div class="clipboard-icon"></div>
-    </div>
-</div>
-
 <div data-ng-bind-html="model.$viewValue.body"
      data-ng-hide="editing"
      class="body" />
@@ -75,6 +68,13 @@
           data-ng-click="share()" />
     <span class="fave-icon pull-right show" title="Favorite"
           data-ng-click="favorite()" />
+  </div>
+
+  <div class="share-dialog" data-ng-show="shared && !editing">
+    <div class="icon-input">
+      <input type="text" value="{{shared_link}}" readonly/>
+      <div class="clipboard-icon"></div>
+    </div>
   </div>
 
 </form>

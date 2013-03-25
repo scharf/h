@@ -187,8 +187,8 @@ class App
 
 
 class Annotation
-  this.$inject = ['$element', '$location', '$scope', 'annotator', 'drafts']
-  constructor: ($element, $location, $scope, annotator, drafts) ->
+  this.$inject = ['$element', '$location', '$scope', 'annotator', 'drafts', '$timeout']
+  constructor: ($element, $location, $scope, annotator, drafts, $timeout) ->
     threading = annotator.threading
 
     $scope.cancel = ->
@@ -244,7 +244,7 @@ class Annotation
     $scope.share = ->
       $scope.shared = not $scope.shared
       if $scope.shared and not $scope.shared_link
-        $scope.shared_link = window.location.host + '/a/' + $scope.$modelValue.id
+        $scope.shared_link = window.location.host + '/a/' + $scope.model.$modelValue.id
         
 
 class Editor
