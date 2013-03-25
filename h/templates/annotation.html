@@ -43,7 +43,7 @@
       </li>
     </ul>
   </div>
-
+  
   <textarea data-ng-model="model.$viewValue.text"
             class="body"
             name="text"
@@ -53,6 +53,14 @@
        target="_blank">Markdown</a> is supported.
   </div>
 </ng-form>
+
+<div class="share-dialog" data-ng-show="shared && !editing">
+    <div class="icon-input">
+      <input type="text" value="{{shared_link}}"/>
+      <div class="clipboard-icon"></div>
+    </div>
+</div>
+
 <div data-ng-bind-html="model.$viewValue.body"
      data-ng-hide="editing"
      class="body" />

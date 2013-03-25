@@ -286,6 +286,11 @@ class Annotation
     $scope.$watch 'editing', (newValue) ->
       if newValue then $timeout -> $element.find('textarea').focus()
 
+    $scope.$watch 'shared', (newValue) ->
+      if newValue and newValue is true
+        $timeout -> $element.find('input').focus()
+        $timeout -> $element.find('input').select()
+        
     # Check if this is a brand new annotation
     if drafts.contains $scope.$modelValue
       $scope.editing = true
@@ -300,6 +305,14 @@ class Annotation
       if $scope.$modelValue? and threading.getContainer($scope.$modelValue.id).flattenChildren()?
         return threading.getContainer($scope.$modelValue.id).flattenChildren().length
       0
+
+    $scope.shared = false
+    $scope.share = ->
+      $scope.shared = not $scope.shared
+      if $scope.shared and not $scope.shared_link
+        $scope.shared_link = window.location.host + '/a/' + $scope.$modelValue.id
+        
+      console.log $scope.shared
 
 class Editor
   this.$inject = [
