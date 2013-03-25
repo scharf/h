@@ -12,7 +12,8 @@
       <!-- Persona -->
       <div data-ng-show="sheet.collapsed"
            class="tinyman">
-        <a data-ng-click="sheet.collapsed = false;
+        <a href=""
+           data-ng-click="sheet.collapsed = false;
                           sheet.tab = 'login';"
            data-ng-hide="persona">Sign in</a>
         <form id="persona"
@@ -203,6 +204,12 @@
     </script>
     <script type="text/ng-template" id="editor.html">
       <metal:main use-macro="load: editor.html" />
+    </script>
+    <script type="text/ng-template" id="markdown.html">
+      <metal:main use-macro="load: markdown.html" />
+    </script>
+    <script type="text/ng-template" id="privacy.html">
+      <metal:main use-macro="load: privacy.html" />
     </script>
     <script type="text/ng-template" id="viewer.html">
       <metal:main use-macro="load: viewer.html" />
