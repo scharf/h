@@ -1,15 +1,34 @@
 <form name="form">
 
-  <!-- Privacy -->
-  <div class="vis-icon pull-left"
-       data-ng-show="form.privacy.$viewValue.name != 'Public'" />
-
-  <!-- Timestamp -->
-  <div class="pull-right small">
-    {{model.$viewValue.updated | fuzzyTime | date:'mediumDate'}}
+  <!-- Right-floated thread controls -->
+  <div class="magicontrols pull-right show" ng-hide="editing">
+    <div class="dropdown" title="More Actions">
+      <span class="dropdown-toggle down-icon"
+            role="button"
+            title="More actions" />
+      <ul class="dropdown-menu" role="menu">
+        <li data-ng-click="edit()">Edit</li>
+        <li data-ng-click="delete()">Delete</li>
+        <li data-ng-click="flag()">Flag</li>
+      </ul>
+    </div>
+    <span class="share-icon" title="Share"
+          data-ng-click="share()" />
+    <span class="fave-icon" title="Favorite"
+          data-ng-click="favorite()" />
   </div>
 
-  <h5 class="user">{{model.$viewValue.user | userName}}</h5>
+  <h5 class="user">
+    {{model.$viewValue.user | userName}}
+
+    <!-- Privacy -->
+    <span class="vis-icon small"
+          ng-show="form.privacy.$viewValue.name != 'Public'" />
+  </h5>
+  <!-- Timestamp -->
+  <h6>
+    {{model.$viewValue.updated | fuzzyTime | date:'mediumDate'}}
+  </h6>
 
   <privacy data-ng-model="$parent.model.$modelValue.permissions"
            data-ng-show="editing"
@@ -43,31 +62,16 @@
   </div>
 
   <!-- Bottom control strip -->
-  <div ng-hide="editing" class="magicontrols">
-    <!-- Left-floated controls -->
-    <span class="pull-left reply-count"
-          data-ng-pluralize=""
+  <div class="magicontrols pull-left"
+       ng-click="reply()"
+       ng-class="{show: thread.children.length == 0}"
+       ng-hide="editing" >
+    <span class="reply-count"
+          ng-pluralize=""
+          ng-show="thread.children.length"
           count="thread.flattenChildren().length"
           when="{one: '1 reply', other: '{} replies'}" />
-    <span class="pull-left reply-icon show"
-          title="Reply"
-          data-ng-click="reply()">Reply</span>
-
-    <!-- Right-floated thread controls -->
-    <div class="dropdown pull-right show" title="More Actions">
-      <span class="dropdown-toggle down-icon"
-            role="button"
-            title="More actions" />
-      <ul class="dropdown-menu pull-right" role="menu">
-        <li data-ng-click="edit()">Edit</li>
-        <li data-ng-click="delete()">Delete</li>
-        <li data-ng-click="flag()">Flag</li>
-      </ul>
-    </div>
-    <span class="share-icon pull-right show" title="Share"
-          data-ng-click="share()" />
-    <span class="fave-icon pull-right show" title="Favorite"
-          data-ng-click="favorite()" />
+    <span class="reply-icon show" title="Reply">Reply</span>
   </div>
 
   <div class="share-dialog" data-ng-show="shared && !editing">

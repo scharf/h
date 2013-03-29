@@ -143,7 +143,10 @@ app = Bundle(
 
 display = Bundle(
     angular,
-    jquery,
+    angular_bootstrap,
+    angular_sanitize,
+    Coffee('h:/js/displayer.coffee',
+           output='js/displayer.js'),
     CSS('h:css/displayer.css', output='css/displayer.css')
 )
 

@@ -71,7 +71,7 @@ class App
             threshold = offset + heatmap.index[0]
             next = highlights.reduce (next, hl) ->
               if next < hl.offset.top < threshold then hl.offset.top else next
-            , threshold - height
+            , 0
             provider.notify method: 'scrollTop', params: next - pad
 
           # If it's the lower tab, scroll to next bucket below
@@ -79,7 +79,7 @@ class App
             threshold = offset + heatmap.index[0] + pad
             next = highlights.reduce (next, hl) ->
               if threshold < hl.offset.top < next then hl.offset.top else next
-            , offset + height
+            , Number.MAX_VALUE
             provider.notify method: 'scrollTop', params: next - pad
 
           # If it's neither of the above, load the bucket into the viewer
@@ -244,7 +244,8 @@ class Annotation
     $scope.share = ->
       $scope.shared = not $scope.shared
       if $scope.shared and not $scope.shared_link
-        $scope.shared_link = window.location.host + '/a/' + $scope.model.$modelValue.id
+        $scope.shared_link = window.location.protocol + '//' + 
+          window.location.host + '/a/' + $scope.model.$modelValue.id
         
 
 class Editor
@@ -297,9 +298,7 @@ class Viewer
       $location.search(search).replace()
 
     $scope.focus = (annotation) ->
-      if $scope.thread
-        highlights = [$scope.thread.message.annotation.$$tag]
-      else if angular.isArray annotation
+      if angular.isArray annotation
         highlights = (a.$$tag for a in annotation when a?)
       else if angular.isObject annotation
         highlights = [annotation.$$tag]
@@ -318,7 +317,7 @@ class Viewer
     if $routeParams.id? and annotator.threading.idTable[$routeParams.id]?
       $scope.detail = true
       $scope.thread = annotator.threading.getContainer $routeParams.id
-      $scope.focus $scope.thread.message.annotation
+      $scope.focus $scope.thread.message?.annotation
     else
       $scope.detail = false
       $scope.thread = null

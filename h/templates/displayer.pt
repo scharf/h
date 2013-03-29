@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html metal:use-macro="main_template">
+<html metal:use-macro="main_template" >
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     	<meta charset="utf-8">
@@ -12,7 +12,6 @@
   	</head>
   	<style type="text/css"></style>
 	<body metal:fill-slot="body">
-      
       <div class="nav">
         <div class="inner">
           <div class="barbutton left title">
@@ -65,7 +64,7 @@
               </div>
             </div>
 
-            <div class="floatainer">
+            <div class="floatainer" data-ng-app="h.displayer">
               <div class="hyp-annotation hyp-paper hyp-detail">
                 <div style="padding-bottom: .5em;">
                   <div class="topbar">
@@ -74,20 +73,21 @@
                   </div>
                   <div class="hyp-content">${annotation.text}</div>
                   
-				  <!-- Replies -->
-                  <div class="hyp-thread">
+				  <!-- Replies -->                          
+                  <div class="hyp-thread" data-ng-controller="DisplayerCtrl">
                     <ul class="annotator-listing">
                     	<li class="hyp-annotation hyp-detail">
                   		<span metal:define-macro="item"
                   			tal:repeat="reply replies">
 	     					<span tal:define="global is_list isinstance(reply, list)"/>
 							<span tal:condition="not is_list">
-						    		<a class="hyp-threadexp" href=""></a>
-									<div class="topbar">
-	          							<div class="hyp-user">${reply.readable_user}</div>
-	          							<div class="hyp-time">${reply.fuzzy_date}</div>
-	        						</div>
-	        						<div class="hyp-content">${reply.text}</div>
+								<a href="" class="hyp-threadexp"
+							    	ng-click="toggleCollapse($event)"></a>	
+								<div class="topbar">
+          							<div class="hyp-user">${reply.readable_user}</div>
+          							<div class="hyp-time">${reply.fuzzy_date}</div>
+        						</div>
+        						<div class="hyp-content">${reply.text}</div>
 							</span>
 						     <div tal:condition="is_list"
 						     	tal:define="replies reply" class="hyp-thread">

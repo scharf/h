@@ -12,8 +12,39 @@ When writing commit messages, please bear the following in mind:
 * http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 * https://github.com/blog/831-issues-2-0-the-next-generation
 
-In particular, please use the GitHub syntax for closing issues with
-commits.
+Please minimize issue gardening by using the GitHub syntax for closing
+issues with commit messages.
+
+If you plan to be an active contributor please join our mailing list
+to coordinate development effort. This coordination helps us avoid
+duplicating efforts and raises the level of collaboration. For small
+fixes, feel free to open a pull request without any prior discussion.
+
+Licensing
+---------
+Before submitting significant contributions, we ask that sign one of
+our Contributor License Agreements. This practice ensures that the
+rights of contributors to their contributions are preserved and
+protects the ongoing availability of the project and a commitment to
+make it available for anyone to use with as few restrictions as
+possible.
+
+There is a version for individuals
+[`HTML <http://hypothes.is/contribute/individual-cla>`_ or
+`PDF <http://hypothes.is/docs/Hypothes.is%20Project-Individual.pdf>`_]
+and a version for those making contributions on behalf of an employer
+[`HTML <http://hypothes.is/contribute/entity-cla>`_ or
+`PDF <http://hypothes.is/docs/Hypothes.is%20Project-Entity.pdf>`_].
+
+A completed form can either be sent by electronic mail to
+license@hypothes.is or via conventional mail at the address below. If
+you have any questions, please contact us.
+
+::
+
+    Hypothes.is Project
+    2261 Market St #632
+    SF, CA 94114
 
 Code Style
 ----------
@@ -75,18 +106,17 @@ No::
     else
         return theOtherThing
 
-Committer Policy
+Committing Policy
 -----------------
 Committers are those with push access to the `main repository`. These
-people should feel free to commit trivial changes in good faith. It is
+people should feel free to commit small changes in good faith. It is
 expected that these people should read upstream commits made by others
-when they feel qualified to review the material and bring any
-objections or questions to the mailing list. In general, these commits
-should be uncontroversial.
+when they feel qualified to review the material and comment with any
+objections, questions or suggestions. In general, these commits should
+be uncontroversial and do not require up front code review.
 
-Non-trivial changes, and changes being submitted by non-committers,
-should follow the branching and merging strategy outlined in the next
-section.
+Larger changes, and changes being submitted by non-committers, should
+follow the branching and merging strategy outlined in the next section.
 
 Branching and Pull Requests
 ---------------------------
@@ -108,6 +138,13 @@ mainline development.
 
 Please try hard to keep extraneous commits out of pull requests so
 that it is easy to see the intent of the patch!
+
+Please do not merge on feature branches. Feature branches should merge
+into upstream branches, but never contain merge commits in the other
+direction. Consider using '--rebase' when pulling if you must keep
+a long-running branch up to date. It is better to start a new branch
+and, if applicable, a new pull request when performing this action on
+branches you have published.
 
 .. _PEP8: http://www.python.org/dev/peps/pep-0008/
 .. _Google Python Style Guide: https://google-styleguide.googlecode.com/svn/trunk/pyguide.html

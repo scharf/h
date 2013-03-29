@@ -626,37 +626,43 @@ span.errorMsg {
   -o-transition: "box-shadow,z-index" 0.5s ease;
   transition: "box-shadow,z-index" 0.5s ease; }
   /* line 402, common.scss */
-  .hyp-detail > .topbar > .annotator-controls {
+.hyp-detail > .topbar > .annotator-controls {
     position: absolute;
     right: 0;
     z-index: 1; }
   /* line 408, common.scss */
-  .hyp-detail > .topbar > .annotator-controls {
+ .hyp-detail > .topbar > .annotator-controls {
     -webkit-transition: opacity 0.25s ease-in-out;
     -moz-transition: opacity 0.25s ease-in-out;
     -o-transition: opacity 0.25s ease-in-out;
     transition: opacity 0.25s ease-in-out;
     opacity: 0; }
   /* line 413, common.scss */
-  .hyp-detail.hyp-hover {
+.hyp-detail.hyp-hover {
     -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
     box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
     z-index: 10; }
     /* line 416, common.scss */
-    .hyp-detail.hyp-hover > .topbar > .annotator-controls {
+.hyp-detail.hyp-hover > .topbar > .annotator-controls {
       opacity: 1; }
   /* line 423, common.scss */
-  .hyp-detail.hyp-collapsed .hyp-content {
-    overflow: hidden;
+.hyp-detail .hyp-collapsed .hyp-content {
+ /*   overflow: hidden;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
     white-space: nowrap;
     font-style: italic;
-    margin-top: 0; }
+    margin-top: 0;
+    margin-bottom: 0; }*/
+    display: none; }
   /* line 431, common.scss */
-  .hyp-detail.hyp-collapsed > .hyp-thread {
-    overflow: hidden; }
+.hyp-detail .hyp-collapsed .hyp-thread {
+    overflow: hidden;
+    display: none; }
+
+.hyp-collapsed .hyp-threadexp {
+    background-image: url("../images/plus_1.png");}
 
 /* line 437, common.scss */
 .hyp-paper > .hyp-threadexp {

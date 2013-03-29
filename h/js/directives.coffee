@@ -21,20 +21,26 @@ annotation = ['$filter', ($filter) ->
 
 
 markdown = ['$filter', '$timeout', ($filter, $timeout) ->
-  link: (scope, elem, attrs, controller) ->
-    return unless controller?
+  link: (scope, elem, attr, ctrl) ->
+    return unless ctrl?
 
-    controller.render = ->
-      return unless scope.readonly and controller.$viewValue
-      scope.rendered = ($filter 'converter') controller.$viewValue
+    input = elem.find('textarea')
+    output = elem.find('div')
 
-    # Publish the controller
-    scope.model = controller
+    # Re-render the markdown when the view needs updating.
+    ctrl.$render = ->
+      scope.rendered = ($filter 'converter') (ctrl.$viewValue or '')
 
-    # Auto-focus the input box
+    # React to the changes to the text area
+    input.bind 'blur change keyup', ->
+      value = input.attr('value') or ''
+      ctrl.$setViewValue value
+      scope.$digest()
+
+    # Auto-focus the input box when the widget becomes editable.
+    # Re-render when it becomes uneditable.
     scope.$watch 'readonly', (newValue) ->
-      unless newValue then $timeout -> elem.find('textarea').focus()
-      controller.render()
+      if newValue then ctrl.$render() else $timeout -> input.focus()
 
   require: '?ngModel'
   restrict: 'E'
@@ -137,6 +143,34 @@ resettable = ->
   transclude: 'element'
 
 
+###
+# The slow validation directive ties an to a model controller and hides
+# it while the model is being edited. This behavior improves the user
+# experience of filling out forms by delaying validation messages until
+# after the user has made a mistake.
+###
+slowValidate = ['$parse', '$timeout', ($parse, $timeout) ->
+  link: (scope, elem, attr, ctrl) ->
+    return unless ctrl?
+
+    promise = null
+
+    elem.addClass 'slow-validate'
+
+    ctrl[attr.slowValidate]?.$viewChangeListeners?.push (value) ->
+      elem.removeClass 'slow-validate-show'
+
+      if promise
+        $timeout.cancel promise
+        promise = null
+
+      promise = $timeout -> elem.addClass 'slow-validate-show'
+
+  require: '^form'
+  restrict: 'A'
+]
+
+
 tabReveal = ['$parse', ($parse) ->
   compile: (tElement, tAttrs, transclude) ->
     panes = []
@@ -194,5 +228,6 @@ angular.module('h.directives', ['ngSanitize'])
   .directive('privacy', privacy)
   .directive('recursive', recursive)
   .directive('resettable', resettable)
+  .directive('slowValidate', slowValidate)
   .directive('tabReveal', tabReveal)
   .directive('thread', thread)

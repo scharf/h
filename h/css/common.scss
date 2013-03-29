@@ -146,13 +146,13 @@ button, input[type=submit], .btn {
   @include smallshadow;
   @include single-transition(opacity, .2s);
   border: solid 1px;
+  bottom: 18%;
   left: 50%;
   margin-left: -15%;
   opacity: 0;
   pointer-events: none;
   position: fixed;
   text-align: center;
-  top: .25em;
   width: 30%;
   z-index: 2000;
 
@@ -220,6 +220,17 @@ button, input[type=submit], .btn {
 
 .req {
   display: none;
+}
+
+.slow-validate {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+
+  &.slow-validate-show {
+    @include transition(max-height .25s ease-in 2s);
+    max-height: 10em;
+  }
 }
 
 .visuallyhidden {
@@ -502,7 +513,7 @@ blockquote {
 //ANNOTATION////////////////////////////////
 //This is for everything that is formatted as an annotation.
 .annotation {
-  margin-bottom: 1em;
+  @include pie-clearfix;
   position: relative;
 
   .user {
@@ -559,7 +570,11 @@ blockquote {
 
     & > * {
       border-left: 1px dotted $grayLight;
+      padding-bottom: 1em;
       position: relative;
+
+      &:first-child { margin-top: 1em; }
+      &:last-child { padding-bottom: 0em; }
     }
   }
 
@@ -624,23 +639,31 @@ blockquote {
 .magicontrols {
   @include pie-clearfix;
   background-color: $bodyBackground;
+  overflow: hidden;
 
-  & > .pull-left {
-    margin-right: 1em;
+  & > * {
+    display: inline-block;
+    padding-right: .3em;
   }
 
-  & > .pull-right {
-    margin-left: 1em;
+  &.pull-right > * {
+    @extends .pull-right;
+    padding-left: .3em;
+    padding-right: 0;
   }
 
-  .show {
-    @include transition(
-      opacity 0 ease-in-out .15s
-    );
+  &.show, .show {
+    @include transition(max-height, opacity);
+    @include transition-delay(.15s);
+    @include transition-duration(1.05s);
+    max-height: 0;
     opacity: 0;
 
     :hover > & {
+      @include transition-delay(.3);
+      @include transition-duration(.3s);
       opacity: 1;
+      max-height: 10em;
     }
   }
 }
@@ -679,6 +702,10 @@ blockquote {
   // Things not shown in the summary view
   .magicontrols {
     .reply-icon, .pull-right {
+      display: none;
+    }
+
+    &.pull-right {
       display: none;
     }
   }
