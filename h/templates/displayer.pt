@@ -29,7 +29,7 @@
       
       <div id="stream">
         <div class="hyp-paper tile">
-          You have followed a link to an annotation. If you had the hypothes.is extension installed, the experience would be better. <a href="">Install it here</a>.  Or read <a href="">more about why</a>.
+          You have followed a link to an annotation. For a better experience, install the <a href="">extension</a>.
         </div>
         <ul class="annotator-listing annotator-widget">
           <li class="tile"> 
@@ -52,7 +52,7 @@
           <div class="noiseknockout">
             <div class="page">
               <div class="domain">
-                <img class="favicon" src="${favicon_link}"><a href="${domain}">${domain_title}</a> | <a href="${annotation.uri}">${title}</a>
+                <img class="favicon" src="${favicon_link}"> <a href="${annotation.uri}">${title}</a> | <a href="${domain}">${domain}</a>
               </div>
             </div>
 
@@ -72,9 +72,10 @@
                     <div class="hyp-time">${fuzzy_date}</div>
                   </div>
                   <div class="hyp-content">${annotation.text}</div>
-                  
+
 				  <!-- Replies -->                          
-                  <div class="hyp-thread" data-ng-controller="DisplayerCtrl">
+                  <div class="hyp-thread" data-ng-controller="DisplayerCtrl"
+                  	tal:condition="len(replies)">
                     <ul class="annotator-listing">
                     	<li class="hyp-annotation hyp-detail">
                   		<span metal:define-macro="item"
@@ -99,7 +100,7 @@
 						     </div>
 						 </span>
 						</li>
-						
+
 					</ul>
 				  </div>
 				  
