@@ -43,6 +43,12 @@
            class="dropdown privacy"
            name="privacy" />
 
+  <div class="share-dialog" data-ng-show="!editing">
+    <div class="icon-input">
+      <input class="share-text" type="text" value="{{shared_link}}" readonly/>
+    </div>
+  </div>
+
   <!-- Timestamp -->
   <h6>
     {{model.$viewValue.updated | fuzzyTime | date:'mediumDate'}}
@@ -110,12 +116,4 @@
           when="{one: '1 reply', other: '{} replies'}" />
     <span class="reply-icon show" title="Reply">Reply</span>
   </div>
-
-  <div class="share-dialog" data-ng-show="shared && !editing">
-    <div class="icon-input">
-      <input type="text" value="{{shared_link}}" readonly/>
-      <div class="clipboard-icon"></div>
-    </div>
-  </div>
-
 </form>
