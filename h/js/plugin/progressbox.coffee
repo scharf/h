@@ -1,8 +1,6 @@
 class Annotator.Plugin.ProgressBox extends Annotator.Plugin
 
   # prototype constants
-  BUCKET_THRESHOLD_PAD: 40
-  BUCKET_SIZE: 50
 
   # heatmap svg skeleton
   html: """
@@ -32,7 +30,6 @@ class Annotator.Plugin.ProgressBox extends Annotator.Plugin
     console.log "Task '" + task + "': " + progressText
     @element.removeClass "annotator-hide"
     @element.text progressText + " " + task
-    window.wtfe = @element
 
   # We are ready.
   finished: (task) ->
