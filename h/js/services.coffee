@@ -5,6 +5,7 @@ class Hypothesis extends Annotator
   # Plugin configuration
   options:
     Heatmap: {}
+    ProgressBox: {}
     Permissions:
       permissions:
         read: ['group:__world__']
@@ -82,6 +83,8 @@ class Hypothesis extends Annotator
     # Update the heatmap when the host is updated or annotations are loaded
     bridge = @plugins.Bridge
     heatmap = @plugins.Heatmap
+    progress = @plugins.ProgressBox
+#    progress.updateProgress "Doing something", 0.5
     threading = @threading
     updateOn = [
       'hostUpdated'
@@ -89,6 +92,7 @@ class Hypothesis extends Annotator
       'annotationCreated'
       'annotationDeleted'
     ]
+#    progress.finished "Whatever"
     for event in updateOn
       this.subscribe event, =>
         @provider.call
