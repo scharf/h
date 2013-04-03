@@ -290,7 +290,7 @@ class Annotation
     $scope.share = ->
       $scope.shared = not $scope.shared
       $element.find('.share-dialog').slideToggle()
-      if $scope.shared and not $scope.shared_link
+      if $scope.shared
         $scope.shared_link = window.location.protocol + '//' + 
           window.location.host + '/a/' + $scope.model.$modelValue.id
         
