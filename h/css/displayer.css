@@ -531,7 +531,7 @@ span.errorMsg {
 /* line 303, common.scss */
 .hyp-thread {
   margin: 0 -1em -1em -0.5em;
-  padding-left: 0.5em; }
+  padding-left: 0.5em;}
   /* line 307, common.scss */
   .hyp-thread .annotator-listing {
     border-left: 1px dotted #969696;
@@ -545,7 +545,7 @@ span.errorMsg {
   height: 0.8em;
   width: 0.8em;
   position: absolute;
-  top: .4em;
+  /*top: .4em;*/
   left: -0.4em;
   outline: 1px dotted #aaa;
   background-image: url("../images/minus_1.png");
@@ -598,7 +598,8 @@ span.errorMsg {
 
 /* line 388, common.scss */
 .hyp-content {
-  margin-bottom: 0.5em; }
+  /*margin-bottom: 0.5em; }*/
+}
 
 /* line 391, common.scss */
 .bottombar {
@@ -651,14 +652,13 @@ span.errorMsg {
       opacity: 1; }
   /* line 423, common.scss */
 .hyp-detail .hyp-collapsed .hyp-content {
- /*   overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
     white-space: nowrap;
     font-style: italic;
     margin-top: 0;
-    margin-bottom: 0; }*/
-    display: none; }
+    margin-bottom: 0; }
   /* line 431, common.scss */
 .hyp-detail .hyp-collapsed .hyp-thread {
     overflow: hidden;
@@ -856,7 +856,9 @@ body {
       margin-bottom: 0;
       padding-left: 1em; }
     /* line 123, site.css.scss */
-    #stream .tile .hyp-excerpt {
+    #stream .tile .hyp-inner {
+      padding-right: 0em; }
+	#stream .tile .hyp-excerpt {
       margin-right: 1em;
       margin-bottom: 0; }
 
@@ -946,6 +948,9 @@ body {
 	display: none;
 	float: left;}
 
+.small {
+	font-size: .8em;
+}
 
 @media(max-width:600px)
 {

@@ -39,7 +39,6 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $sansFontFamily;
-  font-weight: bolder;
   color: $gray;
 }
 
@@ -303,13 +302,10 @@ blockquote {
 
 .dropdown-toggle {
   @include fonticon("\002f", right, 0);
-  background-color: white;
   cursor: pointer;
+
   &:active {
     outline: 0;
-  }
-  &:hover {
-    color: black;
   }
 }
 
@@ -337,6 +333,7 @@ blockquote {
 
   li {
     line-height: 1;
+    text-align: left;
     margin: .4em .5em 0;
     padding-bottom: .5em;
     border-bottom: dotted 1px $grayLighter;
@@ -385,6 +382,7 @@ blockquote {
 
 .open {
   & > .dropdown-menu {
+    @include smallshadow;
     @include rotateX(0);
     opacity: 1;
     pointer-events: auto;
@@ -422,11 +420,11 @@ blockquote {
 }
 
 .check-icon {
-  @include fonticon("\35", left, .3em);
+  @include fonticon("\35", left);
 }
 
 .x-icon {
-  @include fonticon("\36", left, .3em);
+  @include fonticon("\36", left);
 }
 
 .vis-icon {
@@ -522,16 +520,11 @@ blockquote {
     text-decoration: underline;
   }
 
-  .time {
-    @extend .small;
-    margin-left: 1em;
-  }
-
   .body {
     div {
       @include force-wrap;
       clear: both;
-      margin: .25em 0 .5em;
+      margin: .25em 0;
       p:first-child {
         margin-top: 0;
       }
@@ -560,10 +553,6 @@ blockquote {
     float: right;
   }
   
-  .preface {
-    font-weight: bold
-  }
-  
   .quote {
     font-style: italic
   }
@@ -578,17 +567,20 @@ blockquote {
   & > ul {
     @include single-transition(max-height, .4s, cubic-bezier(1, 0, 1, 0));
     max-height: 65536px;
+    overflow: hidden;
 
     padding-left: $thread-padding;
     margin-left: -$thread-padding;
 
+    &:hover {
+      overflow: visible;
+    }
+
     & > * {
       border-left: 1px dotted $grayLight;
-      padding-bottom: 1em;
       position: relative;
 
-      &:first-child { margin-top: 1em; }
-      &:last-child { padding-bottom: 0em; }
+      &:first-child { margin-top: .5em; }
     }
   }
 
@@ -626,10 +618,6 @@ blockquote {
         margin-bottom: 0;
       }
 
-      .reply-icon {
-        display: none;
-      }
-
       .user {
         display: run-in;
         margin-right: .25em;
@@ -639,7 +627,6 @@ blockquote {
     & > ul {
       @include single-transition(max-height, .4s, cubic-bezier(0, 1, 0, 1));
       max-height: 0;
-      overflow: hidden;
     }
 
     & > .threadexp {
@@ -652,32 +639,29 @@ blockquote {
 
 //MAGICONTROLS////////////////////////////////
 .magicontrols {
-  @include pie-clearfix;
-  background-color: $bodyBackground;
-
   & > * {
     display: inline-block;
-    padding-right: .3em;
+    padding-right: .8em;
   }
 
-  &.pull-right > * {
-    @extends .pull-right;
-    padding-left: .3em;
-    padding-right: 0;
+  &.pull-right {
+    text-align: right;
+
+    & > * {
+      padding-left: .8em;
+      padding-right: 0;
+    }
   }
 
-  &.show, .show {
-    @include transition(max-height, opacity);
+  & > .show {
+    @include transition(opacity);
     @include transition-delay(.15s);
     @include transition-duration(1.05s);
-    max-height: 0;
     opacity: 0;
 
     :hover > & {
-      @include transition-delay(.3);
-      @include transition-duration(.3s);
+      @include transition-duration(.15s);
       opacity: 1;
-      max-height: 10em;
     }
   }
 }
@@ -717,13 +701,7 @@ blockquote {
   }
 
   // Things not shown in the summary view
-  .magicontrols {
-    .reply-icon, .pull-right {
-      display: none;
-    }
-
-    &.pull-right {
-      display: none;
-    }
+  .magicontrols .show {
+    display: none;
   }
 }

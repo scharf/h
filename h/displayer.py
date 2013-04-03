@@ -10,6 +10,7 @@ from dateutil.tz import tzutc
 from math import floor
 from itertools import chain
 
+import types
 import logging
 log = logging.getLogger(__name__)
 
@@ -93,18 +94,17 @@ class DisplayerTemplate(object):
         for reply in part :
             children = self._nestlist(childTable[reply['id']], childTable)
             del reply['created']
+            reply['number_of_replies'] = len(children)
             outlist.append(reply)
             if len(children) > 0 : outlist.append(children)
         return outlist 
     
     def _thread_replies(self):
         childTable = {}
-        maxlevel = 1
         reply_threaded = []
         replies = sorted(self._replies, key=lambda reply : reply['created'])
 
         for reply in replies :
-            level = 1
             pointer = reply_threaded
             for thread in reply['thread'].split('/')[1:] :
                 pointer = childTable[thread]
@@ -139,8 +139,15 @@ class DisplayerTemplate(object):
         d.update(self._url_values())
         d['fuzzy_date'] = self._fuzzyTime(self._annotation['updated'])
         d['readable_user'] = self._userName(self._annotation['user'])
-        log.info(self._thread_replies())
         d['replies'] = self._thread_replies()
+
+        #Count nested reply numbers
+        replies = 0
+        for reply in d['replies'] :
+            if not isinstance(reply, types.ListType):
+                replies = replies + reply['number_of_replies'] + 1
+        d['number_of_replies'] = replies
+        
         for key, value in d.items() :
             log.info(key + ': ' + str(value))
         return d

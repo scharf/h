@@ -192,14 +192,12 @@ $em: 14 / 1em !default;
   text-decoration: none;
   line-height: 1;
   cursor: pointer;
-  color: $gray;
   &:hover {
-    color: black;
     opacity: 1;
   }
   @if $iconside == left {
     &:before {
-      content: $char + '\a0';
+      content: $char + '\a0' !important;
       font-family: 'icomoon';
       font-style: normal;
       margin-right: $offset;
@@ -207,62 +205,30 @@ $em: 14 / 1em !default;
       font-weight: normal;
     }
     &:after {
-      content: "";
+      content: "" !important;
+    }
+    &:empty {
+      &:before {
+        content: $char !important;
+      }
     }
   }
   @if $iconside == right {
     &:before {
-      content: "";
+      content: "" !important;
     }
     &:after {
-      content: '\a0' + $char;
+      content: '\a0' + $char !important;
       font-family: 'icomoon';
       font-style: normal;
       margin-left: $offset;
       speak: none;
       font-weight: normal;
     }
+    &:empty {
+      &:after {
+        content: $char !important;
+      }
+    }
   }
-}
-
-
-
-//ICON CLASSES////////////////////////////////
-.flag-icon {
-  @include fonticon("\28", left);
-}
-
-.fave-icon {
-  @include fonticon("\e006", left);
-  &.checked:before {
-    content: "\e005";
-  }
-}
-
-.reply-icon {
-  @include fonticon("\e004", left);
-}
-
-.share-icon {
-  @include fonticon("\25", left);
-}
-
-.down-icon {
-  @include fonticon("\e007", left);
-}
-
-.clipboard-icon {
-  @include fonticon("\33", left);
-}
-
-.check-icon {
-  @include fonticon("\35", left);
-}
-
-.x-icon {
-  @include fonticon("\36", left);
-}
-
-.vis-icon {
-  @include fonticon("\34", left);
 }

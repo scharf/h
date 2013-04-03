@@ -142,6 +142,7 @@ app = Bundle(
 )
 
 display = Bundle(
+    jquery,
     angular,
     angular_bootstrap,
     angular_sanitize,

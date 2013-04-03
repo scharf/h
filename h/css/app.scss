@@ -194,7 +194,7 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
   .close {
     position: absolute;
     right: 1em;
-    top: 0;
+    top: .25em;
   }
 
   &.collapsed {
@@ -302,7 +302,6 @@ svg { -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
   }
 
   .dropdown-toggle {
-    @include fonticon("\002f", right, 0em);
     .provider {
       color: $grayLight;
       display: none;

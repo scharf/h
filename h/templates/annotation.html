@@ -1,50 +1,48 @@
 <form name="form">
-  <!-- Right-floated thread controls -->
-  <div class="magicontrols pull-right show" ng-hide="editing">
-    <span class="fave-icon" title="Favorite"
-          data-ng-click="favorite()" />
-    <span class="share-icon" title="Share"
-          data-ng-click="share()" />
-    <div class="dropdown" title="More Actions">
-      <span class="dropdown-toggle down-icon"
-            role="button"
-            title="More actions" />
-      <ul class="dropdown-menu" role="menu">
-        <li data-ng-show="authorize('update')" data-ng-click="edit()">Edit</li>
-        <li data-ng-show="authorize('delete')" data-ng-click="delete()">Delete</li>
-        <li data-ng-click="flag()">Flag</li>
+  <div class="magicontrols pull-right" ng-hide="editing">
+    <!-- Timestamp -->
+    <span class="small"
+          >{{model.$viewValue.updated | fuzzyTime | date:'mediumDate'}}</span>
+
+    <!-- More actions -->
+    <div class="dropdown small show">
+      <span class="dropdown-toggle" role="button" title="More actions"></span>
+      <ul class="dropdown-menu pull-right" role="menu">
+        <li class="reply-icon"
+            ng-click="reply()">Reply</li>
+        <li class="clipboard-icon"
+            ng-show="authorize('update')"
+            ng-click="edit()">Edit</li>
+        <li class="x-icon"
+            ng-show="authorize('delete')"
+            ng-click="delete()">Delete…</li>
+        <li class="flag-icon"
+            ng-hide="authorize('delete')"
+            ng-click="flag()">Flag…</li>
       </ul>
     </div>
   </div>
 
-  <!-- User heading -->
-  <strong class="user">{{model.$viewValue.user | userName}}</strong>
-
-  <span ng-show="editing && model.$viewValue.deleted"
-        >Delete annotation</span>
-  <span ng-show="!editing && model.$viewValue.deleted"
-        >Annotation deleted.</span>
-  <span class="vis-icon small"
-        ng-show="form.privacy.$viewValue != 'Public'" />
-
-  <!-- Timestamp -->
-  <span class="time">
-    {{model.$viewValue.updated | fuzzyTime | date:'mediumDate'}}
-  </span>
-
-  <!-- Preface -->
-  <ng-switch on="editing && action">
-    <div class="body preface" data-ng-switch-when="delete"
-         >You are about to delete this annotation.</div>
-    <div class="body preface" data-ng-switch-when="edit"
-         >You are about to edit this annotation.</div>
-  </ng-switch>
-
   <!-- Privacy -->
-  <privacy data-ng-model="$parent.model.$modelValue.permissions"
-           data-ng-show="editing && action != 'delete'"
+  <privacy ng-model="$parent.model.$modelValue.permissions"
+           ng-show="editing && action != 'delete'"
            class="dropdown privacy pull-right"
            name="privacy" />
+
+  <!-- Deletion notice -->
+  <span ng-show="!editing && model.$viewValue.deleted"
+        >Annotation deleted.</span>
+
+  <!-- Preface -->
+  <header ng-switch="editing && action">
+    <strong ng-switch-when="delete">You may provide an explanation here.</strong>
+    <!-- User -->
+    <strong ng-switch-default>
+      <span class="user">{{model.$viewValue.user | userName}}</span>
+      <span class="small vis-icon"
+            ng-show="form.privacy.$viewValue != 'Public'"></span>
+    </strong>
+  </header>
 
   <div class="share-dialog" data-ng-show="!editing">
     <div class="icon-input">
@@ -52,24 +50,18 @@
     </div>
   </div>
 
-  <!-- Original text -->
-  <markdown class="body quote"
-            ng-readonly="true"
-            ng-bind="origText"
-            ng-show="editing && action == 'delete'" />
-
   <!-- Prompt -->
   <!-- TODO: replace with placeholder on markdown elements? -->
-  <div data-ng-show="model.$viewValue.deleted && !editing">
+  <div ng-show="model.$viewValue.deleted && !editing">
     <ng-switch on="model.$viewValue.text.length">
-      <div data-ng-switch-when="0">(no reason given)</div>
-      <div data-ng-switch-default>Reason:</div>
+      <div ng-switch-when="0">(no reason given)</div>
+      <div ng-switch-default>Reason:</div>
     </ng-switch>
   </div>
 
   <!-- Body -->
-  <markdown data-ng-model="$parent.model.$modelValue.text"
-            data-ng-readonly="!$parent.editing"
+  <markdown ng-model="$parent.model.$modelValue.text"
+            ng-readonly="!$parent.editing"
             class="body"
             name="text"
             required="" />
@@ -88,7 +80,7 @@
                 ng-click="save()"
                 class="btn check-icon">Save</button>
       </ng-switch>
-      <a data-ng-click="cancel()" class="x-icon">Cancel</a>
+      <span role="button" ng-click="cancel()" class="x-icon">Cancel</span>
     </div>
   </div>
 
@@ -97,21 +89,38 @@
      class="body" />
 
   <!-- Editing preview -->
-  <div data-ng-show="previewText" class="preview">
+  <div ng-show="previewText" class="preview">
     <h4>Preview</h4>
-    <div data-ng-bind-html="previewText" class="body" />
+    <div ng-bind-html="previewText" class="body" />
   </div>
 
   <!-- Bottom control strip -->
-  <div class="magicontrols pull-left"
-       ng-click="reply()"
-       ng-class="{show: thread.children.length == 0}"
-       ng-hide="editing" >
+  <div class="magicontrols small" ng-hide="editing">
     <span class="reply-count"
           ng-pluralize=""
           ng-show="thread.children.length"
           count="thread.flattenChildren().length"
           when="{one: '1 reply', other: '{} replies'}" />
-    <span class="reply-icon show" title="Reply">Reply</span>
+    <a class="reply-icon show" href="" title="Reply" ng-click="reply()">Reply</a>
+    <!-- <span class="fave-icon" title="Favorite"
+          ng-click="favorite()" /> -->
+    <a class="share-icon show" href="" title="Share" ng-click="share()">Share</a>
+
+    <!-- More actions -->
+    <div class="dropdown show">
+      <a href="" class="down-icon dropdown-toggle"
+         role="button"
+         title="More actions">More</a>
+      <ul class="dropdown-menu" role="menu">
+        <li class="clipboard-icon"
+            ng-show="authorize('update')" ng-click="edit()">Edit</li>
+        <li class="x-icon"
+            ng-show="authorize('delete')"
+            ng-click="delete()">Delete…</li>
+        <li class="flag-icon"
+            ng-hide="authorize('delete')"
+            ng-click="flag()">Flag…</li>
+      </ul>
+    </div>
   </div>
 </form>
