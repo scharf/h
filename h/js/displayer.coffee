@@ -12,6 +12,6 @@ angular.module('h.displayer',[])
       #Now for the replies
       if replynumber
         toggle_elem = $element.find('.thread_' + (thread+1)).parent().parent()
-        toggle_elem.slideToggle "fast", =>
-          if expand? then toggle_elem.removeAttr 'style'        
+        if expand? then toggle_elem.removeAttr 'style'
+        else toggle_elem.css 'display', 'none'
 )

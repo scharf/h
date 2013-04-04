@@ -19,9 +19,6 @@
           <span>hypothes<span class="red">.</span>is</span>
         </div>
         <div class="barbutton right">
-          <span>get extension</span>
-        </div>
-        <div class="barbutton right">
           <span>sign up</span>
         </div>
       </div>
@@ -97,7 +94,10 @@
                                 <div>  
                                   <div class="topbar">
                                     <div class="hyp-user">${reply.readable_user}</div>
-                                    <div class="hyp-time">${reply.fuzzy_date}</div>
+                                    <!--<div class="hyp-time">${reply.fuzzy_date}</div>-->
+                                    <div class="magiccontrols pull-right small">
+                                    	<span>${reply.fuzzy_date}</span>
+                                    </div>
                                   </div>
                                   <div class="hyp-content">${reply.text}</div>
                                   <span class="magiccontrols small">
