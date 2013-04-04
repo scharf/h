@@ -272,6 +272,9 @@ class Annotation
     $scope.$watch 'model.$modelValue', (annotation) ->
       if annotation?
         $scope.thread = threading.getContainer annotation.id
+        $scope.shared_link = window.location.protocol + '//' + 
+          window.location.host + '/a/' + $scope.model.$modelValue.id
+        $scope.shared = false
         
     $scope.$watch 'editing', (editing) ->
       if editing and $scope.model.$modelValue?
@@ -288,13 +291,9 @@ class Annotation
         if annotation? and drafts.contains annotation
           $scope.editing = true
 
-    $scope.shared = false
     $scope.share = ->
       $scope.shared = not $scope.shared
       $element.find('.share-dialog').slideToggle()
-      if $scope.shared
-        $scope.shared_link = window.location.protocol + '//' + 
-          window.location.host + '/a/' + $scope.model.$modelValue.id
         
 
 class Editor

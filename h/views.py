@@ -61,7 +61,8 @@ def displayer(context, request):
             else: original = None
             replies = Annotation.search_auth(user, thread = annotation['id'])
             return Displayer(annotation, replies, original).generate_dict()        
-        except:
+        except e:
+            log.info(str(e))
             raise httpexceptions.HTTPInternalServerError()
 
 def includeme(config):

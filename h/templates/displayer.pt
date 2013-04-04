@@ -37,7 +37,7 @@
           <div class="papercontainer">
             <div class="metadata">
               <a href="">${readable_user}</a>
-              annotated:
+              <span tal:condition="readable_user != 'Annotation deleted.'"> annotated:</span>
             </div>
             <div class="control">
               <a class="goto" href="">
