@@ -105,8 +105,11 @@ class DisplayerTemplate(object):
         replies = sorted(self._replies, key=lambda reply : reply['created'])
 
         for reply in replies :
+            log.info(reply)
             pointer = reply_threaded
             for thread in reply['thread'].split('/')[1:] :
+                log.info(thread)
+                log.info(pointer)
                 pointer = childTable[thread]
 
             #Add the new one.
