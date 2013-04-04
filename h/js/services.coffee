@@ -5,7 +5,7 @@ class Hypothesis extends Annotator
   # Plugin configuration
   options:
     Heatmap: {}
-    ProgressBox: {}
+    Progress: {}
     Permissions:
       permissions:
         read: ['group:__world__']
@@ -83,7 +83,7 @@ class Hypothesis extends Annotator
     # Update the heatmap when the host is updated or annotations are loaded
     bridge = @plugins.Bridge
     heatmap = @plugins.Heatmap
-    progress = @plugins.ProgressBox
+    progress = @plugins.Progress
 #    progress.updateProgress "Doing something", 0.5
     threading = @threading
     updateOn = [
@@ -207,6 +207,10 @@ class Hypothesis extends Annotator
         $rootScope.$apply => $location.search('id', null).replace()
       else
         this.hide()
+    )
+
+    .bind('progress', (ctx, status) =>
+      @plugins.Progress.updateProgress status.task, status.progress
     )
 
   getSynonymURLs: (href) ->

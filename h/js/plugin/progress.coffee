@@ -1,4 +1,4 @@
-class Annotator.Plugin.ProgressBox extends Annotator.Plugin
+class Annotator.Plugin.Progress extends Annotator.Plugin
 
   # prototype constants
 
@@ -26,14 +26,15 @@ class Annotator.Plugin.ProgressBox extends Annotator.Plugin
       throw new Error "Invalid param to updateProgress! Should be in the [0;1] range. (Got " + progress + ")"
 
     # OK, business as usual
-    progressText = (100 * progress).toString() + "%"
-    console.log "Task '" + task + "': " + progressText
+    num = Math.round(100*progress)
+    progressText = num.toString() + "%"
+#    console.log "Task '" + task + "': " + progressText
     @element.removeClass "annotator-hide"
     @element.text progressText + " " + task
 
   # We are ready.
   finished: (task) ->
-    console.log "Task '" + task + "' finished!"
+#    console.log "Task '" + task + "' finished!"
     @element.text "."
     @element.addClass "annotator-hide"
     
