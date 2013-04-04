@@ -92,7 +92,7 @@ class Hypothesis extends Annotator
       'annotationCreated'
       'annotationDeleted'
     ]
-#    progress.finished "Whatever"
+    progress.finished "Initializing"
     for event in updateOn
       this.subscribe event, =>
         @provider.call

@@ -152,15 +152,20 @@ class Annotator.Host extends Annotator
           @canDrag = drag
         )
 
+  _scanProgress: (progress) ->
+    console.log "Scan progress: " + progress
+
+
   scanDocument: (reason = "something happened") =>
     try
       console.log "Analyzing host frame, because " + reason + "..."
-      r = @domMatcher.scan()
-      scanTime = r.time
-      console.log "Traversal+scan took " + scanTime + " ms."
+      @domMatcher.scan this._scanProgress, (r) =>
+        scanTime = r.time
+        console.log "Traversal+scan took " + scanTime + " ms."
     catch e
       console.log e.message
       console.log e.stack
+    null
 
   _setupWrapper: ->
     @wrapper = @element
