@@ -103,7 +103,9 @@ class DisplayerTemplate(object):
         childTable = {}
         reply_threaded = []
         replies = sorted(self._replies, key=lambda reply : reply['created'])
-
+        log.info('------------------')
+        log.info(replies)
+        log.info('------------------')
         for reply in replies :
             log.info(reply)
             pointer = reply_threaded
