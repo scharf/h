@@ -975,7 +975,6 @@ body {
 		height: 1em;}
 		
 	.barbutton.right {
-		width: 100%;
 		text-align: right;}
 
     #stream .tile .hyp-excerpt {
@@ -984,10 +983,8 @@ body {
       
     #stream {
       width: 100%;
-      padding-top: 6em;
-}
+      padding-top: 6em;}
 
   .nav .inner {
-    width: 100%;
-  }
+    width: 100%;}
 }
