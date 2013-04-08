@@ -53,6 +53,11 @@ class SiteLayout(BaseLayout):
 class DisplayerLayout(BaseLayout):
     requirements = (('display', None),)
 
+@layout_config(context='h.resources.RootFactory',
+               template='h:templates/base.pt',
+               name='lay_streamer')
+class StreamerLayout(BaseLayout):
+    requirements = (('streamer', None),)
 
 def includeme(config):
     config.include('pyramid_layout')

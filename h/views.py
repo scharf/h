@@ -65,6 +65,14 @@ def displayer(context, request):
             log.info(str(e))
             raise httpexceptions.HTTPInternalServerError()
 
+@view_config(route_name='streamer',
+             renderer='h:templates/streamer.pt',
+             layout='lay_streamer')
+def streamer(request):
+        log.info('request')
+	return {}
+
+
 def includeme(config):
     config.add_view(
         'horus.views.AuthController',

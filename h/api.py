@@ -9,6 +9,9 @@ from pyramid.wsgi import wsgiapp2
 
 from h import messages, models
 
+import streamer
+
+
 @view_config(context='h.resources.APIFactory', request_method='POST',
              name='access_token', permission='access_token', renderer='string')
 def access_token(request):
@@ -90,8 +93,11 @@ def includeme(config):
         g.auth = auth.Authenticator(models.Consumer.get_by_key)
         g.authorize = authorize
         g.before_annotation_update = anonymize_delete
-
+	g.after_annotation_create = streamer.after_save
     app.before_request(before_request)
+
+    #configugre streamer
+    streamer.init_streamer()
 
     # Configure the API views -- version 1 is just an annotator.store proxy
     api_v1 = wsgiapp2(app)

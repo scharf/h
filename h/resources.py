@@ -125,4 +125,5 @@ def includeme(config):
 
     config.add_route('embed', '/embed.js')
     config.add_route('displayer', '/a/{uid}')
+    config.add_route('streamer', '/stream/')
     config.add_route('index', '/', factory='h.resources.RootFactory')
