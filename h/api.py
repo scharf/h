@@ -94,6 +94,8 @@ def includeme(config):
         g.authorize = authorize
         g.before_annotation_update = anonymize_delete
 	g.after_annotation_create = streamer.after_save
+	g.after_annotation_update = streamer.after_update
+	g.after_annotation_delete = streamer.after_delete
     app.before_request(before_request)
 
     #configugre streamer

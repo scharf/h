@@ -4,6 +4,7 @@ import threading
 
 from tornado import web, ioloop
 from sockjs.tornado import SockJSRouter, SockJSConnection
+from annotator import authz
 
 log = logging.getLogger(__name__)
 
@@ -37,9 +38,20 @@ def init_streamer(port = 5001):
 def add_port():
     return { 'port' : _port }
 
-def after_save(annotation):
+def after_action(annotation, action):
+    if not authz.authorize(annotation, 'read'): return
     for connection in StreamerConnection.connections :
-    	#connection.send(json.dumps(annotation))
-    	connection.send(annotation)
+    	connection.send([annotation, action])
 
+def after_save(annotation):
+    log.info('after save')
+    after_action(annotation, 'save')    
+
+def after_update(annotation):
+    log.info('after update')
+    after_action(annotation, 'update')    
+
+def after_delete(annotation):
+    log.info('after delete')
+    after_action(annotation, 'delete')    
 

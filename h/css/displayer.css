@@ -888,6 +888,10 @@ body {
   float: left;
   width: 50%; }
 
+.stream-floatainer {
+  float: left;
+  width: 49%; }
+
 /* line 145, site.css.scss */
 .nav {
   position: fixed;
@@ -960,6 +964,10 @@ body {
 
 .magiccontrols > * {
 	display: inline-block;
+}
+
+.margin-right {
+  margin-right: 1em;
 }
 
 @media(max-width:600px)
