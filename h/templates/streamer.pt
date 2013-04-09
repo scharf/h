@@ -11,11 +11,16 @@
   <style type="text/css"></style>
 
   <body metal:fill-slot="body" ng-app="h.streamer">
-
+    <script type="text/javascript">var port = ${port};</script>
+    <span ng-controller="StreamerCtrl">
     <div class="nav">
       <div class="inner">
         <div class="barbutton left title">
           <span>hypothes<span class="red">.</span>is</span>
+        </div>
+        <div class="barbutton left">
+          <span ng-show="streaming">Streaming :)</span>
+          <span ng-hide="streaming" ng-click="start_streaming()">Not streaming <span class="red">:(</span> Click here to start streaming!</span>
         </div>
         <div class="barbutton right">
           <span>sign up</span>
@@ -27,7 +32,7 @@
       <ul class="annotator-listing annotator-widget">
           <div class="papercontainer">
             <div class="metadata">
-          <div ng-controller="StreamerCtrl">
+          <div>
             <li ng-repeat="annotation in annotations">
 <!--              <div class="floatainer"> -->
                 <div class="hyp-annotation hyp-paper hyp-detail">
@@ -53,5 +58,6 @@
           </div>
       </ul>
     </div>
+   </span>
   </body>
 </html>

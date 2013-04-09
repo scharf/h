@@ -19,18 +19,23 @@ class StreamerConnection(SockJSConnection):
     def on_close(self):
 	self.connections.remove(self)
 
+_port = 5001
+
 def _init_streamer():
     StreamerRouter = SockJSRouter(StreamerConnection, '/streamer')
 
     app = web.Application(StreamerRouter.urls)
-    app.listen(5001)
+    app.listen(_port)
     ioloop.IOLoop.instance().start()
 
-def init_streamer():
+def init_streamer(port = 5001):
+    _port = int(port)
     t = threading.Thread(target=_init_streamer)
     t.daemon = True
     t.start()
 
+def add_port():
+    return { 'port' : _port }
 
 def after_save(annotation):
     for connection in StreamerConnection.connections :

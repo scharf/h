@@ -11,6 +11,7 @@ from flask import g
 from horus.views import BaseController
 from h.displayer import DisplayerTemplate as Displayer
 from h import models
+from h import streamer as streamer_template
 
 from annotator.annotation import Annotation
 
@@ -70,7 +71,7 @@ def displayer(context, request):
              layout='lay_streamer')
 def streamer(request):
         log.info('request')
-	return {}
+	return streamer_template.add_port()
 
 
 def includeme(config):

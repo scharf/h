@@ -8,20 +8,26 @@ get_quote = (annotation) ->
 
   quote
 
-sock = new SockJS('http://0.0.0.0:5001/streamer')
   
 angular.module('h.streamer',['h.filters'])
   .controller('StreamerCtrl',
   ($scope, $element) ->
+    $scope.streaming = false
     $scope.annotations = []    
 
-    #sock.onopen = ->
-    #sock.onclose = ->
-    sock.onmessage = (msg) =>
-      $scope.$apply =>
-        console.log msg.data
-        msg.data['quote'] = get_quote msg.data
-        $scope.annotations.push msg.data
+    $scope.start_streaming = ->
+      sock = new SockJS(window.location.protocol + '//' + window.location.hostname + ':' + port + '/streamer')    
+      sock.onopen = ->
+        $scope.$apply =>
+          $scope.streaming = true
+      sock.onclose = ->
+        $scope.$apply =>
+          $scope.streaming = false
+      sock.onmessage = (msg) =>
+        $scope.$apply =>
+          console.log msg.data
+          msg.data['quote'] = get_quote msg.data
+          $scope.annotations.push msg.data
   )
 
 

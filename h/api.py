@@ -97,7 +97,8 @@ def includeme(config):
     app.before_request(before_request)
 
     #configugre streamer
-    streamer.init_streamer()
+    if 'streamer.port' in settings:
+    	streamer.init_streamer(settings['streamer.port'])
 
     # Configure the API views -- version 1 is just an annotator.store proxy
     api_v1 = wsgiapp2(app)
