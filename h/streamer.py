@@ -11,16 +11,12 @@ class StreamerConnection(SockJSConnection):
     connections = set()
 
     def on_open(self, info):
-        log.info('open')
-	log.info(str(info))
 	self.connections.add(self)
 
     def on_message(self, msg):
-        log.info('message')
         self.send(msg)
 
     def on_close(self):
-        log.info('close')
 	self.connections.remove(self)
 
 def _init_streamer():
@@ -37,9 +33,8 @@ def init_streamer():
 
 
 def after_save(annotation):
-    log.info('after save for: ')
-    log.info(str(annotation))
     for connection in StreamerConnection.connections :
-    	connection.send(json.dumps(annotation, indent=2))
+    	#connection.send(json.dumps(annotation))
+    	connection.send(annotation)
 
 

@@ -156,7 +156,11 @@ display = Bundle(
 
 streamer = Bundle(
     sockjs,
-    Coffee('h:/js/streamer.coffee', output='js/streamer.js')
+    angular,
+    angular_bootstrap,
+    angular_sanitize,
+    Coffee('h:/js/streamer.coffee', output='js/streamer.js'),
+    CSS('h:css/displayer.css', output='css/displayer.css')
 )
 
 site = SCSS('h:css/site.scss', depends=(base + common), output='css/site.css')

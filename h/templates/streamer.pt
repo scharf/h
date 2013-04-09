@@ -9,7 +9,16 @@
   </head>
   <style type="text/css"></style>
 
-  <body metal:fill-slot="body">
+  <body metal:fill-slot="body" ng-app="h.streamer">
     <div>Hello page!</div>
+    <div ng-controller="StreamerCtrl">
+      <li ng-repeat="annotation in annotations">
+            <div class="topbar">
+              <div class="hyp-user">{{annotation['user']}}</div>
+              <div class="hyp-time">{{annotation['created']}}</div>
+            </div>
+            <div>{{annotation['text']}}</div>
+      </li>
+    </div>
   </body>
 </html>
