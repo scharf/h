@@ -160,6 +160,7 @@ streamer = Bundle(
     angular_bootstrap,
     angular_sanitize,
     pagedown,
+    Coffee('h:/js/filters.coffee', output='js/filters.js'),
     Coffee('h:/js/streamer.coffee', output='js/streamer.js'),
     CSS('h:css/displayer.css', output='css/displayer.css')
 )

@@ -12,6 +12,17 @@
 
   <body metal:fill-slot="body" ng-app="h.streamer">
 
+    <div class="nav">
+      <div class="inner">
+        <div class="barbutton left title">
+          <span>hypothes<span class="red">.</span>is</span>
+        </div>
+        <div class="barbutton right">
+          <span>sign up</span>
+        </div>
+      </div>
+    </div>
+
     <div id="stream">  
       <ul class="annotator-listing annotator-widget">
           <div class="papercontainer">
@@ -25,8 +36,14 @@
                       <div class="hyp-user">{{annotation['user'] | userName}}</div>
                       <div class="hyp-time">{{annotation['created'] | fuzzyTime}}</div>
                     </div>
-                  <div>{{annotation['quote']}}</div>
-                  <div>{{annotation['text']}}</div>
+		  <div class="noiseknockout">
+                    <div class="hyp-excerpt hyp-paper">
+                      <blockquote>{{annotation['quote']}}</blockquote>
+                    </div>
+                    <div class="hyp-excerpt hyp-paper">
+                      <div>{{annotation['text']}}</div>
+                    </div>
+                  </div>
                 </div>
                 </div>
 <!--              </div> -->
