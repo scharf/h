@@ -1,10 +1,10 @@
 get_quote = (annotation) ->
   if not 'target' in annotation then return ''
-  quote = ''
+  quote = '(This is a reply annotation)'
   for target in annotation['target']
     for selector in target['selector']
         if selector['type'] is 'TextQuoteSelector' 
-            quote = quote + selector['exact'] + ' '
+            quote = selector['exact'] + ' '
 
   quote
 
@@ -26,8 +26,12 @@ angular.module('h.streamer',['h.filters'])
       sock.onmessage = (msg) =>
         $scope.$apply =>
           console.log msg.data
-          msg.data['quote'] = get_quote msg.data
-          $scope.annotations.push msg.data
+          annotation = msg.data[0]
+          action = msg.data[1]
+          annotation['action'] = action
+          annotation['quote'] = get_quote annotation
+          $scope.annotations.push annotation
+          window.scrollTo 0, document.body.scrollHeight
   )
 
 

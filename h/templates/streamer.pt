@@ -37,13 +37,15 @@
                 <div class="hyp-annotation hyp-paper hyp-detail">
                   <div style="padding-bottom: .5em;">                
                     <div class="topbar">
-                      <div class="hyp-user">{{annotation['user'] | userName}} </div>
-                      <span ng-switch="annotation['action']">
-                        <span ng-switch-when="save"> has created an annotation</span>
-                        <span ng-switch-when="update"> has updated an annotation</span>
-                        <span ng-switch-when="delete"> has deleted an annotation</span>
-                      </span> 
-                      <div class="hyp-time">{{annotation['created'] | fuzzyTime}}</div>
+                      <div>
+                        <span class="hyp-user">{{annotation['user'] | userName}}</span>
+                        <span ng-switch="annotation['action']">
+                          <span ng-switch-when="save">&nbsp;has created an annotation</span>
+                          <span ng-switch-when="update">&nbsp;has updated an annotation</span>
+                          <span ng-switch-when="delete">&nbsp;has deleted an annotation</span>
+                        </span> 
+                        <div class="hyp-time">{{annotation['created'] | fuzzyTime}}</div>
+                      </div>
                     </div>
 		  <div class="noiseknockout">
                     <div class="hyp-excerpt hyp-paper stream-floatainer margin-right">

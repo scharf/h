@@ -15,7 +15,8 @@ class StreamerConnection(SockJSConnection):
 	self.connections.add(self)
 
     def on_message(self, msg):
-        self.send(msg)
+	pass
+        #Json configuration will come here later
 
     def on_close(self):
 	self.connections.remove(self)
