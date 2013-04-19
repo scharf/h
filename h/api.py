@@ -8,9 +8,7 @@ from pyramid.view import view_config
 from pyramid.wsgi import wsgiapp2
 
 from h import messages, models
-
-import streamer
-
+from h import streamer
 
 @view_config(context='h.resources.APIFactory', request_method='POST',
              name='access_token', permission='access_token', renderer='string')

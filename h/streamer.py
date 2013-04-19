@@ -21,18 +21,17 @@ class StreamerConnection(SockJSConnection):
     def on_close(self):
 	self.connections.remove(self)
 
-_port = 5001
-
-def _init_streamer():
+def _init_streamer(port):
     StreamerRouter = SockJSRouter(StreamerConnection, '/streamer')
 
     app = web.Application(StreamerRouter.urls)
-    app.listen(_port)
+    app.listen(port) 
     ioloop.IOLoop.instance().start()
 
 def init_streamer(port = 5001):
+    global _port
     _port = int(port)
-    t = threading.Thread(target=_init_streamer)
+    t = threading.Thread(target=_init_streamer, args=(port,))
     t.daemon = True
     t.start()
 
@@ -45,14 +44,11 @@ def after_action(annotation, action):
     	connection.send([annotation, action])
 
 def after_save(annotation):
-    log.info('after save')
     after_action(annotation, 'save')    
 
 def after_update(annotation):
-    log.info('after update')
     after_action(annotation, 'update')    
 
 def after_delete(annotation):
-    log.info('after delete')
     after_action(annotation, 'delete')    
 
