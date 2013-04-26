@@ -9,6 +9,7 @@ from pyramid.wsgi import wsgiapp2
 
 from h import interfaces, models
 
+import rollbar
 
 class Store(object):
     def __init__(self):
@@ -60,6 +61,7 @@ def authorize(annotation, action, user=None):
 
 
 def before_request():
+#    rollbar.report_message('Server message test', 'warning')
     g.auth = auth.Authenticator(models.Consumer.get_by_key)
     g.authorize = authorize
     g.before_annotation_update = anonymize_deletes

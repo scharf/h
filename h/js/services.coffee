@@ -267,6 +267,7 @@ class Hypothesis extends Annotator
     this
 
   showEditor: (annotation) =>
+#    throw new Error "test error"     
     this.show()
     @element.injector().invoke [
       '$location', '$rootScope', '$route'

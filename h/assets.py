@@ -107,6 +107,9 @@ jquery_mousewheel = Uglify(
     'lib/jquery.mousewheel.js', output='lib/jquery.mousewheel.min.js'
 )
 
+rollbar_app = Uglify('lib/rollbar-app.js', output='lib/rollbar-app.min.js')
+rollbar_inject = Uglify('lib/rollbar-inject.js', output='lib/rollbar-inject.min.js')
+
 # Polyfills
 raf = Uglify('lib/polyfills/raf.js', output='lib/polyfills/raf.js.min')
 
@@ -138,6 +141,7 @@ common = ['css/base.scss', 'css/common.scss']
 
 # Main resource bundles
 app = Bundle(
+    rollbar_app,
     jquery,
     jquery_mousewheel,
     angular,
@@ -189,6 +193,7 @@ site = SCSS('css/site.scss', depends=(base + common), output='css/site.min.css')
 # the frame and its parent window. It then makes cretain annotator methods
 # available via the bridge plugin.
 inject = Bundle(
+    rollbar_inject,
     jquery,
     jschannel,
     annotator,

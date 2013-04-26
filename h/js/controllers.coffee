@@ -121,6 +121,13 @@ class App
         $scope.token = null
 
     $scope.$watch 'persona', (newValue, oldValue) =>
+      user = if newValue?
+        newValue.username + "@" + newValue.provider
+      else
+        "<guest>"
+      window._rollbarParams.person =
+        id: user
+        username: user
       if oldValue? and not newValue?
         # TODO: better knowledge of routes
         $http.post '/app/logout', '',

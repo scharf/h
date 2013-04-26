@@ -97,6 +97,7 @@ class Annotator.Host extends Annotator
         )
 
         .bind('dragFrame', (ctx, screenX) =>
+#          throw new Error "Test host page error"
           if screenX > 0
             if @drag.last?
               @drag.delta += screenX - @drag.last
