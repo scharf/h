@@ -74,7 +74,6 @@ def before_request():
 
 
 def includeme(config):
-    import pydevd;pydevd.settrace()
     app = Flask('annotator')  # Create the annotator-store app
     app.register_blueprint(store.store)  # and register the store api.
 
