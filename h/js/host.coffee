@@ -64,6 +64,8 @@ class Annotator.Host extends Annotator
           parsed[k] = v
         parsed
 
+    this.addPlugin 'Document'
+
     # Build a channel for the publish API
     @api = Channel.build
       origin: '*'
@@ -156,6 +158,17 @@ class Annotator.Host extends Annotator
         .bind('setDrag', (ctx, drag) =>
           @drag.enabled = drag
           @drag.last = null
+        )
+
+        .bind('adderClick', =>
+          @onAdderClick @event
+        )
+
+        .bind('getDocumentInfo', =>
+          return {
+            uri: @plugins.Document.uri()
+            metadata: @plugins.Document.metadata
+          }
         )
 
   scanDocument: (reason = "something happened") =>
@@ -264,3 +277,8 @@ class Annotator.Host extends Annotator
     @api.notify
       method: 'addToken'
       params: token
+
+  #Save the event for restarting edit
+  onAdderClick: (event) =>
+    @event = event
+    super

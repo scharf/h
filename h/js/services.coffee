@@ -4,6 +4,7 @@ class Hypothesis extends Annotator
 
   # Plugin configuration
   options:
+    noMatching: true
     Discovery: {}
     Heatmap: {}
     Permissions:
@@ -38,9 +39,11 @@ class Hypothesis extends Annotator
       showViewPermissionsCheckbox: false,
       userString: (user) -> user.replace(/^acct:(.+)@(.+)$/, '$1 on $2')
     Threading: {}
+    Document: {}
 
   # Internal state
   dragging: false     # * To enable dragging only when we really want to
+  ongoing_edit: false # * Is there an interrupted edit by login
 
   # Here as a noop just to make the Permissions plugin happy
   # XXX: Change me when Annotator stops assuming things about viewers
@@ -164,35 +167,6 @@ class Hypothesis extends Annotator
         $rootScope.$apply => this.hide()
     )
 
-  getSynonymURLs: (href) ->
-    stringStartsWith = (string, prefix) ->
-      prefix is string.substr 0, prefix.length
-
-    stringEndsWith = (string, suffix) ->
-      suffix is string.substr string.length - suffix.length
-
-    console.log "Looking for synonym URLs for '" + href + "'..."
-    results = []
-    if stringStartsWith href, "http://elife.elifesciences.org/content"
-      if stringEndsWith href, ".full-text.pdf"
-        root = href.substr 0, href.length - ".full-text.pdf".length
-        results.push root
-        results.push root + ".full.pdf"
-      else if stringEndsWith href, ".full.pdf"
-        root = href.substr 0, href.length - ".full.pdf".length
-        results.push root
-        results.push root + ".full-text.pdf"        
-      else
-        results.push href + ".full.pdf"
-        results.push href + ".full-text.pdf"
-    else if stringStartsWith href, "https://peerj.com/articles/"
-      if stringEndsWith href, ".pdf"
-        results.push (href.substr 0, href.length - 4) + "/"
-      else
-        results.push (href.substr 0, href.length - 1) + ".pdf"
-        
-    return results
-
   _setupWrapper: ->
     @wrapper = @element.find('#wrapper')
     .on 'mousewheel', (event, delta) ->
@@ -266,6 +240,10 @@ class Hypothesis extends Annotator
     ]
     this
 
+  clickAdder: =>
+    @provider.notify
+      method: 'adderClick'
+
   showEditor: (annotation) =>
     this.show()
     @element.injector().invoke [
@@ -274,6 +252,8 @@ class Hypothesis extends Annotator
         unless this.plugins.Auth? and this.plugins.Auth.haveValidToken()
           $route.current.locals.$scope.$apply ->
             $route.current.locals.$scope.$emit 'showAuth', true
+          @provider.notify method: 'onEditorHide'
+          @ongoing_edit = true
           return
 
         # Set the path
@@ -281,9 +261,11 @@ class Hypothesis extends Annotator
           id: annotation.id
           action: 'create'
         $location.path('/editor').search(search)
- 
+
         # Digest the change
         $rootScope.$digest()
+
+        @ongoing_edit = false
 
         # Push the annotation into the editor scope
         if $route.current.controller is 'EditorController'
@@ -341,23 +323,30 @@ class Hypothesis extends Annotator
 
     # Get the location of the annotated document
     @provider.call
-      method: 'getHref'
-      success: (href) =>
+      method: 'getDocumentInfo'
+      success: (info) =>
+        href = info.uri
+        @plugins.Document.metadata = info.metadata
+
         options = angular.extend {}, (@options.Store or {}),
           annotationData:
             uri: href
           loadFromSearch:
             limit: 1000
             uri: href
-        this.addPlugin 'Store', options
-        this.patch_store this.plugins.Store
-        console.log "Loaded annotions for '" + href + "'."
-        for href in this.getSynonymURLs href
-          console.log "Also loading annotations for: " + href
-          this.plugins.Store._apiRequest 'search', uri: href, (data) =>
-            console.log "Found " + data.total + " annotations here.."
-            this.plugins.Store._onLoadAnnotationsFromSearch data
+        this.addStore(options)
 
+  addStore: (options) ->
+    this.addPlugin 'Store', options
+    this.patch_store this.plugins.Store
+
+    href = options.loadFromSearch?.uri
+    return unless href?
+
+    console.log "Loaded annotions for '" + href + "'."
+    for uri in @plugins.Document.uris()
+      console.log "Also loading annotations for: " + uri
+      this.plugins.Store.loadAnnotationsFromSearch uri: uri
 
 class DraftProvider
   drafts: []

@@ -42,6 +42,12 @@ class Annotation(BaseController):
     def __html__(self):
         request = self.request
         context = request.context
+        if len(context) == 0:
+            raise httpexceptions.HTTPNotFound(
+                body_template=
+                "Either no annotation exists with this identifier, or you "
+                "don't have the permissions required for viewing it."
+            )
 
         d = context._url_values()
         d['annotation'] = context
@@ -49,7 +55,7 @@ class Annotation(BaseController):
         d['annotation']['reply_count'] = len(context.referrers)
 
         if context.get('references', []):
-            root = context.__parent__[context.references[0]]
+            root = context.__parent__[context['references'][0]]
             d['quote'] = root.quote
         else:
             d['quote'] = context.quote

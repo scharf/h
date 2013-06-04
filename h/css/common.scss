@@ -2,6 +2,9 @@
 
 @import 'reset';
 @import 'base';
+@import 'responsive';
+@import 'yui_grid';
+
 
 $sansFontFamily: "Source Sans Pro", $sansFontFamily;
 $serifFontFamily: "Merriweather", $serifFontFamily;
@@ -38,6 +41,20 @@ em { font-style: italic; }
 html {
   font-size: $baseFontSize / 16px * 1em;
   line-height: $baseLineHeight / 16px * 1em;
+
+  @include yui_grid();
+
+  @include respond-to(handhelds) {
+    @include yui_grid('h-');
+  }
+
+  @include respond-to(wide-handhelds) {
+    @include yui_grid('wh-');
+  }
+
+  @include respond-to(tablets) {
+    @include yui_grid('t-');
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -250,7 +267,6 @@ button, input[type=submit], .btn {
 //EXCERPT////////////////////////////////
 .excerpt {
   position: relative;
-  margin-bottom: 1em;
   blockquote {
     margin-bottom: 0;
   }
@@ -269,22 +285,22 @@ blockquote {
   margin-bottom: 1em;
   padding: 0 1em;
 
-  &:before {
-    color: rgba(150, 150, 150, .5);
-    content: "\23";
+  &:before, &:after {
+    color: $grayLighter;
     font-family: "icomoon";
-    font-size: 6em;
     position: absolute;
+  }
+
+  &:before {
+    content: "\23";
+    font-size: 6em;
     top: -.2em;
     left: -.15em;
   }
 
   &:after {
-    color: rgba(150, 150, 150, .5);
     content: "\24";
-    font-family: "icomoon";
     font-size: 5em;
-    position: absolute;
     right: -.15em;
     bottom: -.1em;
   }
@@ -316,8 +332,8 @@ blockquote {
 .dropdown-menu {
   @include rotateX(90deg);
   background: $white;
-  border: solid .1em $grayLighter;
-  margin-top: .625em;
+  border: solid 1px $grayLighter;
+  margin-top: .8em;
   top: 100%;
   float: left;
   opacity: 0;
@@ -367,26 +383,27 @@ blockquote {
 
   // These psuedo-elements add the speech bubble tail / triangle.
   &:before, &:after {
-    @include rotateZ(360deg);
-    border-color: transparent;
+    // http://www.red-team-design.com/css-diagonal-borders-still-not-rendering-properly-on-firefox
+    @include scale(.9999);
+    border-color: rgba(0, 0, 0, 0);
+
     border-style: solid;
+    border-width: 0 7px 6px 7px;
     content: '';
     position: absolute;
-    left: .35em;
     height: 0;
+    left: 5px;
     width: 0;
   }
 
   &:before {
     border-bottom-color: $grayLighter;
-    border-width: 0 .5em .5em .5em;
-    top: -.5em;
+    top: -7px;
   }
 
   &:after {
     border-bottom-color: $white;
-    border-width: 0 .5em .5em .5em;
-    top: -.45em;
+    top: -6px;
     z-index: 3;
   }
 
@@ -399,7 +416,7 @@ blockquote {
     // Align the tail
     &:before, &:after {
       left: auto;
-      right: .35em;
+      right: 5px;
     }
   }
 }
@@ -558,9 +575,10 @@ blockquote {
 //PAPER////////////////////////////////
 //Provides the white background upon which items sit
 .paper {
-  @include border-radius(.2em);
+  @include border-radius(2px);
+  @include smallshadow(0, 2px);
   background: $white;
-  border-bottom: solid .1em $grayLighter;
+  border: solid 1px $grayLighter;
   padding: 1em;
 }
 
@@ -569,11 +587,11 @@ blockquote {
 .topbar {
   @include smallshadow;
   background: $white;
-  border: .1em solid $grayLighter;
-  height: 2.1em;
+  border: solid 1px $grayLighter;
+  height: 2em;
   position: fixed;
-  left: -.1em;
-  right: -.1em;
+  left: -1px;
+  right: -1px;
   top: .5em;
   z-index: 5;
 
@@ -587,12 +605,8 @@ blockquote {
     }
   }
 
-  .inner {
-    max-width: grid(12);
-    margin: 0 auto;
-    & > * {
-      padding: .3em;
-    }
+  .inner > * {
+    padding: .3em;
   }
 
   .tinyman {
@@ -847,54 +861,12 @@ blockquote {
 }
 
 
-
-/*
-    Mobile layout
-    240-479 px
-    Zoomed out below 320 px
-*/
-
-@media screen and (min-width: 15em) {
-  .content { padding: 3em 1em; }
-}
-
-/*
-    Wide mobile layout
-    480-767 px
-    Zoomed in above 480 px
-*/
-
-@media screen and (min-width: 30em) {
-}
-
-/*
-    Tablet layout
-    600-911 px
-    Zoomed in above 600 px
-*/
-
-@media screen and (min-width: 37.5em) {
-  .content { padding: 6em; }
-}
-
-/*
-    Widescreen layout
-    912-1887 px
-    Zoomed in above 912 px
-*/
-
-@media screen and (min-width: 57em) {
-  .content {
-    max-width: grid(12);
-    margin: auto;
+//A grid of cards
+.card-grid {
+  position: relative;
+  margin: 0 -1em;
+  & > * {
+    padding: 1em;
+    margin: -1em 0;
   }
-}
-
-/*
-    Huge-screen layout
-    1888-2520 px
-    Zoomed in above 1920 px
-*/
-
-@media screen and (min-width: 118em) {
 }
