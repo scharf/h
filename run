@@ -13,11 +13,22 @@ def activate():
             code = compile(f.read(), activate, 'exec')
             exec(code, {}, dict(__file__=activate))
 
+def initpydevd():
+    import sys
+    pydevpath="/Applications/eclipse-minmal/plugins/org.python.pydev_2.7.0.2013032300/pysrc"
+    if pydevpath not in sys.path:
+        sys.path.append(pydevpath)
+        try:
+            import pydevd ;pydevd.settrace()
+            print "**********************SUCCESS**************************"
+        except:
+            print "cannot import pydevd from",pydevpath
+
 
 if __name__ == '__main__':
+    initpydevd()
     if 'VIRTUAL_ENV' not in environ:
         activate()
-
     # If the distribution has not been set up for development, do so.
     if not environ.get('PYTHONSETUP'):
         # Use an environment variable to signal not to do this on reload
